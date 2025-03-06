@@ -1,5 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { AuthorId } from './author.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { AuthorEntity, AuthorId } from './author.entity';
 
 export type BookId = string & { __brand: 'Book' };
 
@@ -14,9 +21,13 @@ export class BookEntity extends BaseEntity {
   @Column({ name: 'publishedYear', type: 'int' })
   publishedYear: number;
 
-  @Column({ name: 'author', type: 'varchar' })
-  authorName: string;
+  @Column({ name: 'averageRating', type: 'number' })
+  averageRating: number;
 
   @Column({ name: 'authorId', type: 'uuid' })
   authorId: AuthorId;
+
+  @ManyToOne(() => AuthorEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'authorId' })
+  author: AuthorEntity;
 }

@@ -11,6 +11,7 @@ export type AuthorModel = {
 };
 
 // This is the class for when a new author is created
+
 export type CreateAuthorModel = {
   name: string;
   photoURL?: string;
