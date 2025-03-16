@@ -13,7 +13,7 @@ export class BookRepository {
     return this.bookRepository.find();
   }
 
-  public async createBook(input: CreateBookModel): Promise<BookModel> {
+  public async createBook(input: CreateBookModel) {
     return this.bookRepository.save(this.bookRepository.create(input));
   }
 }
