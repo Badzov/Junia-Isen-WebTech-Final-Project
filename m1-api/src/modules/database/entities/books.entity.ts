@@ -21,7 +21,7 @@ export class BookEntity extends BaseEntity {
   @Column({ name: 'publishedYear', type: 'int' })
   publishedYear: number;
 
-  @Column({ name: 'averageRating', type: 'number' })
+  @Column({ name: 'averageRating', type: 'float' })
   averageRating: number;
 
   @Column({ name: 'authorId', type: 'uuid' })

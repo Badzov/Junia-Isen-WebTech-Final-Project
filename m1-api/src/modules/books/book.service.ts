@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BookRepository } from './book.repository';
 import { BookModel, CreateBookModel } from './book.model';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 
 @Injectable()
 export class BookService {
