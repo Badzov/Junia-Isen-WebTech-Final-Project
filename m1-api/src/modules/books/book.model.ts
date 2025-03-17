@@ -12,5 +12,13 @@ export type BookModel = {
 export type CreateBookModel = {
   title: string;
   publishedYear: number;
-  rating: number;
+  averageRating?: number;
+  authorId?: string;
+};
+
+export type UpdateBookModel = {
+  title?: string;
+  publishedYear?: number;
+  averageRating?: number;
+  authorId?: AuthorId;
 };

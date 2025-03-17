@@ -16,38 +16,21 @@ export class AuthorController {
 
   @Get(':id') // /api/authors/:id 
   public async getAuthorById(@Param('id') id: string): Promise<AuthorModel> {
-    const author = await this.authorService.getAuthorById(id);
-    if (!author) {
-      throw new NotFoundException(`Author with ID ${id} not found`);
-    }
-    return author;
+    return this.authorService.getAuthorById(id);
   }
 
   @Post() // /api/authors 
-  public async createAuthor(
-    @Body() input: CreateAuthorDto,
-  ): Promise<AuthorModel> {
+  public async createAuthor(@Body() input: CreateAuthorDto): Promise<AuthorModel> {
     return this.authorService.createAuthor(input);
   }
 
   @Patch(':id') // /api/authors/:id
-  public async updateAuthor(
-    @Param('id') id: string,
-    @Body() input: UpdateAuthorDto,
-  ): Promise<AuthorModel> {
-    const author = await this.authorService.updateAuthor(id, input);
-    if (!author) {
-      throw new NotFoundException(`Author with ID ${id} not found`);
-    }
-    return author;
+  public async updateAuthor(@Param('id') id: string, @Body() input: UpdateAuthorDto,): Promise<AuthorModel> {
+    return this.authorService.updateAuthor(id, input);
   }
 
   @Delete(':id') // /api/authors/:id
   public async deleteAuthor(@Param('id') id: string): Promise<void> {
-    const author = await this.authorService.getAuthorById(id);
-    if (!author) {
-      throw new NotFoundException(`Author with ID ${id} not found`);
-    }
-    await this.authorService.deleteAuthor(id);
+    return this.authorService.deleteAuthor(id);
   }
 }
