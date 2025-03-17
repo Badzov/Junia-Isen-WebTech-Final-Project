@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { AuthorEntity } from '../database/entities/author.entity';
-import { AuthorModel, CreateAuthorModel } from './author.model';
+import { AuthorEntity, AuthorId } from '../database/entities/author.entity';
+import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from './author.model';
 
-// Repository talks to the database
 
 @Injectable()
 export class AuthorRepository {
@@ -16,9 +15,21 @@ export class AuthorRepository {
     return this.authorRepository.find();
   }
 
-  public async createAuthor(input: CreateAuthorModel) {
-    return this.authorRepository.save<AuthorEntity>(
-      this.authorRepository.create(input),
-    );
+  public async getAuthorById(id: string): Promise<AuthorModel> {
+    return this.authorRepository.findOne({ where: { id: id as AuthorId } });
+  }
+
+  public async createAuthor(input: CreateAuthorModel): Promise<AuthorModel> {
+    return this.authorRepository.save(this.authorRepository.create(input));
+  }
+
+  public async updateAuthor(id: string, input: UpdateAuthorModel): Promise<AuthorModel> {
+    await this.authorRepository.update(id, input);
+    return this.authorRepository.findOne({ where: { id: id as AuthorId } });
+  }
+
+  public async deleteAuthor(id: string): Promise<boolean> {
+    const result = await this.authorRepository.delete(id);
+    return result.affected > 0;
   }
 }

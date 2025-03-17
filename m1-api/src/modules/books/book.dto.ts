@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsInt } from 'class-validator';
+import { IsString, IsNumber, IsInt, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
@@ -8,5 +8,10 @@ export class CreateBookDto {
   publishedYear: number;
 
   @IsNumber()
-  rating: number;
+  @IsOptional()
+  averageRating: number;
+
+  @IsUUID()
+  @IsOptional()
+  authorId: string;
 }

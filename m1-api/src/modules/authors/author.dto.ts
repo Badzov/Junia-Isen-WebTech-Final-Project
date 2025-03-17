@@ -18,3 +18,23 @@ export class CreateAuthorDto {
   @IsOptional()
   photoURL?: string;
 }
+
+// Same goes here, any part of the author can be updated thats why everything is optional
+
+export class UpdateAuthorDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsNumber()
+  @IsOptional()
+  numberOfBooksWritten?: number;
+
+  @IsNumber()
+  @IsOptional()
+  averageRating?: number;
+
+  @IsString()
+  @IsOptional()
+  photoURL?: string;
+}

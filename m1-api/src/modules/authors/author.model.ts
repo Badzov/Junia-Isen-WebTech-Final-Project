@@ -18,3 +18,12 @@ export type CreateAuthorModel = {
   numberOfBooksWritten?: number;
   averageRating?: number;
 };
+
+// This is the class for when an author is updated
+
+export type UpdateAuthorModel = {
+  name?: string;
+  numberOfBooksWritten?: number;
+  averageRating?: number;
+  photoURL?: string;
+}

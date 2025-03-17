@@ -10,12 +10,12 @@ export class AuthorEntity {
   @Column({ name: 'name', type: 'varchar' })
   name: string;
 
-  @Column({ name: 'numberOfBooksWritten', type: 'int' })
+  @Column({ name: 'numberOfBooksWritten', type: 'int', default: 0 })
   numberOfBooksWritten: number;
 
-  @Column({ name: 'averageRating', type: 'float' })
+  @Column({ name: 'averageRating', type: 'float', default: 0 })
   averageRating: number;
 
-  @Column({ name: 'photoURL', type: 'varchar' })
+  @Column({ name: 'photoURL', type: 'varchar', default: "" })
   photoURL: string;
 }

@@ -2,9 +2,11 @@ import { AuthorController } from './author.controller';
 import { AuthorRepository } from './author.repository';
 import { AuthorService } from './author.service';
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthorEntity } from '../database/entities/author.entity';
 
-// This is what joins the controller and repository as one
 @Module({
+  imports: [TypeOrmModule.forFeature([AuthorEntity])],
   controllers: [AuthorController],
   providers: [AuthorRepository, AuthorService],
 })

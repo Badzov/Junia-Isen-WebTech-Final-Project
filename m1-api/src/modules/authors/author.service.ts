@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AuthorRepository } from './author.repository';
-import { AuthorModel, CreateAuthorModel } from './author.model';
+import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from './author.model';
 
 // Its what serves the data to the repository
 
@@ -12,7 +12,30 @@ export class AuthorService {
     return this.authorRepository.getAuthors();
   }
 
+  public async getAuthorById(id: string): Promise<AuthorModel> {
+    const author = await this.authorRepository.getAuthorById(id);
+    if (!author) {
+      throw new NotFoundException(`Author with ID ${id} not found`);
+    }
+    return author;
+  }
+
   public async createAuthor(input: CreateAuthorModel): Promise<AuthorModel> {
     return this.authorRepository.createAuthor(input);
+  }
+
+  public async updateAuthor(id: string, input: UpdateAuthorModel): Promise<AuthorModel> {
+    const author = await this.authorRepository.updateAuthor(id, input);
+    if (!author) {
+      throw new NotFoundException(`Author with ID ${id} not found`);
+    }
+    return author;
+  }
+
+  public async deleteAuthor(id: string): Promise<void> {
+    const result = await this.authorRepository.deleteAuthor(id);
+    if (!result) {
+      throw new NotFoundException(`Author with ID ${id} not found`);
+    }
   }
 }
