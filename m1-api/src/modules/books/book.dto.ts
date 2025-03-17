@@ -9,6 +9,9 @@ export class CreateBookDto {
   publishedYear: number;
 
   @IsNumber()
+  price: number; 
+
+  @IsNumber()
   @IsOptional()
   averageRating: number;
 
@@ -25,6 +28,10 @@ export class UpdateBookDto {
   @IsInt()
   @IsOptional()
   publishedYear: number;
+
+  @IsNumber()
+  @IsOptional()
+  price: number;
 
   @IsNumber()
   @IsOptional()

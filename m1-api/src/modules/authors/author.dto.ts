@@ -6,6 +6,10 @@ export class CreateAuthorDto {
   @IsString()
   name: string;
 
+  @IsString()
+  @IsOptional()
+  biography?: string;
+
   @IsNumber()
   @IsOptional()
   numberOfBooksWritten?: number;
@@ -25,6 +29,10 @@ export class UpdateAuthorDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @IsString()
+  @IsOptional()
+  biography?: string;
 
   @IsNumber()
   @IsOptional()
