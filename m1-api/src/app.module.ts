@@ -6,12 +6,13 @@ import { AuthorModule } from './modules/authors/author.module';
 import { BookModule } from './modules/books/book.module';
 import {ThrottlerModule, ThrottlerGuard} from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { RatingModule } from './modules/ratings/rating.module';
 
 // Here we implemented a ThrottlerGuard to limit the amount of requests that can be made to the API.
 // We also added the ThrottlerModule.forRoot() method to configure the ThrottlerGuard with two different settings.
 
 @Module({
-  imports: [DatabaseModule, AuthorModule, BookModule, ThrottlerModule.forRoot([{
+  imports: [DatabaseModule, AuthorModule, BookModule, RatingModule, ThrottlerModule.forRoot([{
     name: 'short',
     ttl: 1000, 
     limit: 3,  

@@ -7,7 +7,8 @@ import { RatingRepository } from '../ratings/rating.repository';
 import { RatingService } from '../ratings/rating.service';
 
 @Module({
-  controllers: [BookController, RatingController],
-  providers: [BookRepository, BookService, RatingRepository, RatingService],
+  controllers: [BookController],
+  providers: [BookRepository, BookService],
+  exports: [BookRepository],
 })
 export class BookModule {}

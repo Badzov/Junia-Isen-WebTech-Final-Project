@@ -5,10 +5,10 @@ import { BookModel } from "../books/book.model";
 export type RatingModel = {
   id: RatingId;
   stars: number;
-  comment?: string;
+  comment: string;
   createdAt: Date;
   bookId: BookId;
-  book: BookModel;
+  book?: BookModel;
 };
 
 export type CreateRatingModel = {
@@ -20,5 +20,4 @@ export type CreateRatingModel = {
 export type UpdateRatingModel = {
   stars?: number;
   comment?: string;
-  bookId: BookId;
 };

@@ -15,22 +15,25 @@ export class RatingController {
 
   @Get(':id')
   public async getRatingById(@Param('bookId') bookId: string, @Param('id') id: string,): Promise<RatingModel> {
-    return this.ratingService.getRatingById(id);
+    return this.ratingService.getRatingById(bookId, id);
   }
 
   @Post()
   public async addRating(@Param('bookId') bookId: string, @Body() input: CreateRatingDto): Promise<RatingModel> {
-    input.bookId = bookId as BookId;
-    return this.ratingService.addRating(input);
+    const createRatingModel: CreateRatingModel = {
+      ...input,
+      bookId: bookId as BookId, // Add bookId from the URL
+    };
+    return this.ratingService.addRating(createRatingModel);
   }
 
   @Patch(':id')
   public async updateRating(@Param('bookId') bookId: string, @Param('id') id: string, @Body() input: UpdateRatingDto): Promise<RatingModel> {
-    return this.ratingService.updateRating(id, input);
+    return this.ratingService.updateRating(bookId, id, input);
   }
 
   @Delete(':id')
   public async deleteRating(@Param('bookId') bookId: string, @Param('id') id: string,): Promise<void> {
-    return this.ratingService.deleteRating(id);
+    return this.ratingService.deleteRating(bookId, id);
   }
 }

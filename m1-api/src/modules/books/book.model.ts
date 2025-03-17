@@ -4,7 +4,7 @@ import { BookId } from '../database/entities/books.entity';
 
 export type BookModel = {
   id: BookId;
-  author: AuthorModel;
+  author?: AuthorModel;
   title: string;
   publishedYear: number;
   price: number;
