@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Patch, Delete, NotFoundException, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Patch, Delete, NotFoundException, Param, Query } from '@nestjs/common';
 import { AuthorModel } from './author.model';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto, UpdateAuthorDto } from './author.dto';
@@ -10,8 +10,14 @@ export class AuthorController {
   constructor(private readonly authorService: AuthorService) {}
 
   @Get() // /api/authors
-  public async getAuthors(): Promise<AuthorModel[]> {
-    return this.authorService.getAuthors();
+  public async getAuthors(
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number): Promise<AuthorModel[]> {
+      
+    return this.authorService.getAuthors(search, sortBy, sortOrder, limit, offset);
   }
 
   @Get(':id') // /api/authors/:id 

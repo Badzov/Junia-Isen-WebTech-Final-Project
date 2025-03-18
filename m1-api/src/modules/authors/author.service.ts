@@ -8,8 +8,14 @@ import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from './author.mode
 export class AuthorService {
   constructor(private readonly authorRepository: AuthorRepository) {}
 
-  public async getAuthors(): Promise<AuthorModel[]> {
-    return this.authorRepository.getAuthors();
+  public async getAuthors(
+    search?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC',
+    limit?: number,
+    offset?: number): Promise<AuthorModel[]> {
+      
+    return this.authorRepository.getAuthors(search, sortBy, sortOrder, limit, offset);
   }
 
   public async getAuthorById(id: string): Promise<AuthorModel> {

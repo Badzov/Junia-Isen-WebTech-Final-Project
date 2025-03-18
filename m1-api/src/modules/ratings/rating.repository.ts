@@ -10,8 +10,19 @@ export class RatingRepository {
 
   constructor(private readonly dataSource: DataSource) {}
 
-  public async getRatings(bookId: string): Promise<RatingModel[]> {
-    return this.ratingRepository.find({where: { bookId: bookId as BookId }, relations: ['book']});
+  public async getRatings(
+    bookId: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC'): Promise<RatingModel[]> {
+
+    const query = this.ratingRepository.createQueryBuilder('rating').where('rating.bookId = :bookId', { bookId });
+
+    // We just need the sorting functionality
+    if (sortBy) {
+      query.orderBy(`rating.${sortBy}`, sortOrder);
+    }
+  
+    return query.getMany();
   }
 
   public async getRatingById(id: string): Promise<RatingModel | null> {

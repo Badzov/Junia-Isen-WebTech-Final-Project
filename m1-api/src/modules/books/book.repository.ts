@@ -5,12 +5,33 @@ import { BookModel, CreateBookModel, UpdateBookModel } from '../books/book.model
 
 @Injectable()
 export class BookRepository {
-  private readonly bookRepository = this.dataSource.getRepository(BookEntity);
 
+  private readonly bookRepository = this.dataSource.getRepository(BookEntity);
   constructor(private readonly dataSource: DataSource) {}
 
-  public async getBooks(): Promise<BookModel[]> {
-    return this.bookRepository.find();
+  public async getBooks(
+    search?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC',
+    limit?: number,
+    offset?: number): Promise<BookModel[]> {
+      
+    // Here we just make a standard query using the TypeORM QueryBuilder
+    const query = this.bookRepository.createQueryBuilder('book');
+
+    //Filtering by search
+    if (search) {
+      query.where('book.title LIKE :search', { search: `%${search}%` });
+    }
+    //Sorting by sortBy
+    if (sortBy) {
+      query.orderBy(`book.${sortBy}`, sortOrder);
+    }
+    //Pagination
+    if (limit !== undefined && offset !== undefined) {
+      query.skip(offset).take(limit);
+    }
+    return query.getMany();
   }
 
   public async getBook(id: string): Promise<BookModel> {

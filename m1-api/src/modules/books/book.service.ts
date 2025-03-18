@@ -7,8 +7,14 @@ import { Throttle, SkipThrottle } from '@nestjs/throttler';
 export class BookService {
   constructor(private readonly bookRepository: BookRepository) {}
 
-  public async getBooks(): Promise<BookModel[]> {
-    return this.bookRepository.getBooks();
+  public async getBooks(
+    search?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC',
+    limit?: number,
+    offset?: number): Promise<BookModel[]> {
+
+    return this.bookRepository.getBooks(search, sortBy, sortOrder, limit, offset);
   }
 
   public async getBook(id: string): Promise<BookModel> {

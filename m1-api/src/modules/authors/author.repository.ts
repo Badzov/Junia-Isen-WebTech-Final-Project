@@ -11,8 +11,26 @@ export class AuthorRepository {
 
   constructor(private readonly dataSource: DataSource) {}
 
-  public async getAuthors(): Promise<AuthorModel[]> {
-    return this.authorRepository.find();
+  public async getAuthors(
+    search?: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC',
+    limit?: number,
+    offset?: number): Promise<AuthorModel[]> {
+      
+    // Same thing as for the book repository
+    const query = this.authorRepository.createQueryBuilder('author');
+  
+    if (search) {
+      query.where('author.name LIKE :search', { search: `%${search}%` });
+    }
+    if (sortBy) {
+      query.orderBy(`author.${sortBy}`, sortOrder);
+    }
+    if (limit !== undefined && offset !== undefined) {
+      query.skip(offset).take(limit);
+    }
+    return query.getMany();
   }
 
   public async getAuthorById(id: string): Promise<AuthorModel> {

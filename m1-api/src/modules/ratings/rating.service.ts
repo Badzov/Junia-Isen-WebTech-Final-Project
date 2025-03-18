@@ -10,14 +10,18 @@ export class RatingService {
     private readonly bookRepository: BookRepository
   ) {}
 
-  public async getRatings(bookId: string): Promise<RatingModel[]> {
+  public async getRatings(
+    bookId: string,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC'): Promise<RatingModel[]> {
+
     // Validate that the book exists
     const book = await this.bookRepository.getBook(bookId);
     if (!book) {
       throw new NotFoundException(`Book with ID ${bookId} not found`);
     }
 
-    return this.ratingRepository.getRatings(bookId);
+    return this.ratingRepository.getRatings(bookId, sortBy, sortOrder);
   }
 
   public async getRatingById(bookId: string, id: string): Promise<RatingModel> {
