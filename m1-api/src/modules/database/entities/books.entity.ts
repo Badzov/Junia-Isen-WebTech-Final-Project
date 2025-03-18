@@ -1,11 +1,4 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm';
 import { AuthorEntity, AuthorId } from './author.entity';
 
 export type BookId = string & { __brand: 'Book' };
@@ -24,7 +17,7 @@ export class BookEntity extends BaseEntity {
   @Column({ name: 'price', type: 'float' }) 
   price: number;
 
-  @Column({ name: 'averageRating', type: 'float', nullable: true, default: null})
+  @Column({ name: 'averageRating', type: 'float', default: 0})
   averageRating: number;
 
   @Column({ name: 'authorId', type: 'uuid',  nullable: true, default: null})

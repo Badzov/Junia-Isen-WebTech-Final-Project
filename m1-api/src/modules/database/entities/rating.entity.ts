@@ -14,11 +14,11 @@ export class RatingEntity {
   @Column({ name: 'comment', type: 'text', nullable: true, default: null })
   comment: string;
 
-  @Column({ name: 'bookId', type: 'uuid' })
-  bookId: BookId;
-
   @Column({ name: 'createdAt', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @Column({ name: 'bookId', type: 'uuid' })
+  bookId: BookId;
 
   @ManyToOne(() => BookEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'bookId' })

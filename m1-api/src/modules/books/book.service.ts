@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BookRepository } from './book.repository';
 import { BookModel, CreateBookModel, UpdateBookModel } from './book.model';
-import { Throttle, SkipThrottle } from '@nestjs/throttler';
+import { AuthorService } from '../authors/author.service';
 
 @Injectable()
 export class BookService {
-  constructor(private readonly bookRepository: BookRepository) {}
+  constructor(
+    private readonly bookRepository: BookRepository,
+    private readonly authorService: AuthorService
+  ) {}
 
   public async getBooks(
     search?: string,
@@ -26,15 +29,36 @@ export class BookService {
   }
 
   public async createBook(input: CreateBookModel): Promise<BookModel> {
-    return this.bookRepository.createBook(input);
+    const book = await this.bookRepository.createBook(input); 
+    // Update numberOfBooksWritten for the author
+    if (book.authorId) {
+      await this.authorService.updateNumberOfBooksWritten(book.authorId);
+    }
+    return book;
   }
 
   public async updateBook(id: string, input: UpdateBookModel): Promise<BookModel> {
-    const book = await this.bookRepository.getBook(id);
-    if (!book) {
+    // Here we also handle the edge case where a book changes the author and we need to adjust the
+    // averageRating for the authors and the number of books written by those authors
+    const oldBook = await this.bookRepository.getBook(id);
+    if (!oldBook) {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
-    return this.bookRepository.updateBook(id, input);
+    const updatedBook = await this.bookRepository.updateBook(id, input);
+
+    // Recalculate averageRating for the old author (if the authorId changed)
+    if (oldBook.authorId !== updatedBook.authorId) {
+      await this.authorService.updateAuthorAverageRating(oldBook.authorId);
+      await this.authorService.updateNumberOfBooksWritten(oldBook.authorId);
+    }
+
+    // Recalculate averageRating for the new author
+    if (updatedBook.authorId) {
+      await this.authorService.updateAuthorAverageRating(updatedBook.authorId);
+      await this.authorService.updateNumberOfBooksWritten(updatedBook.authorId);
+    }
+
+    return updatedBook;
   }
 
   public async deleteBook(id: string): Promise<void> {
@@ -43,5 +67,10 @@ export class BookService {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
     await this.bookRepository.deleteBook(id);
+    
+    // Update numberOfBooksWritten for the author
+    if (book.authorId) {
+      await this.authorService.updateNumberOfBooksWritten(book.authorId);
+    }
   }
 }

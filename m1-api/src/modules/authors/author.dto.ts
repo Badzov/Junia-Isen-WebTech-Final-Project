@@ -10,14 +10,6 @@ export class CreateAuthorDto {
   @IsOptional()
   biography?: string;
 
-  @IsNumber()
-  @IsOptional()
-  numberOfBooksWritten?: number;
-
-  @IsNumber()
-  @IsOptional()
-  averageRating?: number;
-
   @IsString()
   @IsOptional()
   photoURL?: string;
@@ -33,14 +25,6 @@ export class UpdateAuthorDto {
   @IsString()
   @IsOptional()
   biography?: string;
-
-  @IsNumber()
-  @IsOptional()
-  numberOfBooksWritten?: number;
-
-  @IsNumber()
-  @IsOptional()
-  averageRating?: number;
 
   @IsString()
   @IsOptional()
