@@ -10,6 +10,7 @@ export default function BookDetails() {
   const [authors, setAuthors] = useState([]);
   const [author, setAuthor] = useState({ id: "unknown", name: "Unknown" });
 
+  // Loads the authors and books when the page is instanciated
   useEffect(() => {
     loadAuthors();
     if (id) {
@@ -23,6 +24,7 @@ export default function BookDetails() {
     } 
   }, [id]);
 
+  // Loads the authors from the API
   const loadAuthors = () => {
     axios.get('http://localhost:3001/api/authors')
       .then(response => {
@@ -33,6 +35,7 @@ export default function BookDetails() {
       });
   };
 
+  // Looks for the author that have a matching id in the books authorID attribute
   useEffect(() => {
     if (book && authors.length > 0) {
       const foundAuthor = authors.find(author => author.id === book.authorId) || { id: "unknown", name: "Unknown" };

@@ -36,6 +36,7 @@ export default function BookList() {
         })
       }
 
+      // Loads the existing authors from the API
     const loadAuthors = () => {
       axios.get('http://localhost:3001/api/authors')
       .then((response) => {
@@ -46,23 +47,28 @@ export default function BookList() {
       })
     }
 
+    // Opens modal to create the new book
       const createNewBook = () => {
         setIsOpen(true);
       }
 
+      // Fills the variable with the current search query
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     }
 
+    // filters the book by title
     const filteredBooks = books.filter(book => 
       book.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Adds the new book to the repository
     const handleSaveBook = (newBook) => {
       setBooks([...books, newBook]);
       loadBooks();
     }
 
+    // Function to sort the book is descending or ascending order by their title
     const sortBooks = () => {
       const sortedBooks = [...books].sort((a,b) => {
         return isSortedAsc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
@@ -71,6 +77,7 @@ export default function BookList() {
       setIsSortedAsc(!isSortedAsc);
     }
 
+    // Makes API call to delete the book by ID
     const deleteBook = (id: string) => {
       axios.delete(`http://localhost:3001/api/books/${id}`)
       .then(() => {

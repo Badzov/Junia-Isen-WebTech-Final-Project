@@ -1,5 +1,4 @@
 import React from "react"
-import { CreateAuthorModel } from '../models/AuthorModel'
 import { useState } from "react";
 import { Modal } from '@mui/material';
 import { Box } from '@mui/material';
@@ -7,6 +6,7 @@ import axios from 'axios';
 
 const CreateAuthorModal = ({ onClose, onSave }) => {
 
+    // Create author model and variable
     const [author, setAuthor] = useState({
         name: "",
         biography: "",
@@ -15,24 +15,19 @@ const CreateAuthorModal = ({ onClose, onSave }) => {
         photoURL: "",
     });
 
-    const addAuthor = () => {
+
+    // Function to add an author with data integrity validation
+    const addAuthor = () => {   
 
         if (!author.name || !author.biography || !author.averageRating || !author.numberOfBooksWritten || !author.photoURL) {
             alert("Please fill in all fields before saving.")
             return;
-        } else if (author.name.length < 1 || author.biography.length < 0 || author.averageRating < 0 || author.photoURL.length < 0) {
+        } else if (author.name.length < 1 || author.biography.length < 0 || author.averageRating > 5 || author.averageRating < 0 ||author.photoURL.length < 0) {
             alert("Please insert valid values.")
             return;
         }
 
-        const formattedAuthor = {
-            ...author,
-            publishedYear: parseInt(author.publishedYear, 10) || 0,
-            price: parseFloat(author.price) || 0,
-            averageRating: parseFloat(author.averageRating) || 0
-        };
-
-        axios.post('http://localhost:3001/api/authors', formattedAuthor)
+        axios.post('http://localhost:3001/api/authors', author)
         .then((response) => {
             onSave(response.data);
             onClose();  // Close modal only after success
@@ -44,6 +39,7 @@ const CreateAuthorModal = ({ onClose, onSave }) => {
         })
     }
 
+    // Recieves the data from the input fields
     const handleChange = (event) => {
         setAuthor({
             ...author, [event.target.name]: event.target.value,

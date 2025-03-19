@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import Link from 'next/link';
 
 export default function ListAuthors() {
-    // Books repository
+    // Authors repository
     const [authors, setAuthors] = useState<AuthorModel[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -17,11 +17,12 @@ export default function ListAuthors() {
     const [deleteModal, setDeleteModal] = useState(false);
     const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
 
-    // Populates the book variable with data
+    // Populates the author variable with data
     useEffect(() => {
         loadAuthors();
     }, []);
 
+    // Loads the authors from the API call
     const loadAuthors = () => {
       axios.get('http://localhost:3001/api/authors')
       .then((response) => {
@@ -32,23 +33,28 @@ export default function ListAuthors() {
       })
     }
 
+    // Use to open and close the modal
     const createNewAuthor = () => {
         setIsOpen(true);
     }
 
+    // Recieves the search query from the filtering bar
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     }
 
+    // Filters the authors by name
     const filteredAuthors = authors.filter(author => 
       author.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Adds new author to the model
     const handleSaveAuthor = (newAuthor) => {
       setAuthors([...authors, newAuthor]);
     }
 
-    const sortBooks = () => {
+    // Function to sort the authors using comparisons, and depending of the state of sorted it will change between ascending and descending
+    const sortAuthors = () => {
       const sortedAuthors = [...authors].sort((a,b) => {
         return isSortedAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
       })
@@ -56,6 +62,7 @@ export default function ListAuthors() {
       setIsSortedAsc(!isSortedAsc);
     }
 
+    // API call to delete the book
     const deleteBook = (id: string) => {
       axios.delete(`http://localhost:3001/api/authors/${id}`)
       .then(() => {
@@ -69,7 +76,7 @@ export default function ListAuthors() {
         <div>
         <input type="text" placeholder='Filter authors...' value={searchQuery} onChange={handleSearch}></input>
         <button onClick={createNewAuthor} style={{marginLeft: "20px"}}>Create Author</button>
-        <button onClick={sortBooks} style={{marginLeft: "20px"}}>Sort</button>
+        <button onClick={sortAuthors} style={{marginLeft: "20px"}}>Sort</button>
         { isOpen &&  <CreateAuthorModal onClose={() => setIsOpen(false)} onSave={handleSaveAuthor}/> }
         <table>
           <thead >
@@ -84,7 +91,7 @@ export default function ListAuthors() {
               <tr key={author.id}>
                 <td style={{ padding: "0 30px" }}>{author.name}</td>
                 <td style={{ padding: "0 30px" }}>{author.numberOfBooksWritten}</td>
-                <td style={{ padding: "0 30px" }}><img src={author.photoURL} alt={"No Image"} width="100" height="100"></img></td>
+                <td style={{ padding: "0 30px" }}><img src={author.photoURL} alt={"No Image"} width="140" height="100"></img></td>
                 <td>
                   <Link href={`/authors/${author.id}`}>
                     <button style={{marginRight: "10px"}}>
