@@ -12,15 +12,7 @@ export default function BookList() {
     const [books, setBooks] = useState<BookModel[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
-
-
-    const [newBook, setNewBook] = useState<CreateBookModel>({
-      title: '',
-      publishedYear: 0,
-      averageRating: 0,
-      price: 0,
-      authorId: '',
-    })
+    const [isSortedAsc, setIsSortedAsc] = useState(true);
 
 
     // Populates the book variable with data
@@ -37,14 +29,6 @@ export default function BookList() {
         .catch((err) => {
           console.error(err)
         })
-      }
-
-      const createBook = (input: CreateBookModel) => {
-        axios.post('http://localhost:3001/api/books', input)
-        .then((data) => {
-          setBooks((prev) => [...(prev ?? []), data.data])
-        })
-        .catch((error) => console.log(error))
       }
 
       const createNewBook = () => {
@@ -64,13 +48,27 @@ export default function BookList() {
       book.publishedYear.toString().includes(searchQuery)
     );
 
+    const handleSaveBook = (newBook) => {
+      setBooks([...books, newBook]);
+      loadBooks();
+    }
+
+    const sortBooks = () => {
+      const sortedBooks = [...books].sort((a,b) => {
+        return isSortedAsc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+      })
+      setBooks(sortedBooks);
+      setIsSortedAsc(!isSortedAsc);
+    }
+
   return (
     <div>
         <p>List of Books</p>
         <div>
         <input type="text" placeholder='Filter books...' value={searchQuery} onChange={handleSearch}></input>
         <button onClick={createNewBook}>Create Book</button>
-        { isOpen &&  <CreateBookModal/> }
+        <button onClick={sortBooks}>Sort</button>
+        { isOpen &&  <CreateBookModal onClose={() => setIsOpen(false)} onSave={handleSaveBook}/> }
         <table>
           <thead>
             <tr>
