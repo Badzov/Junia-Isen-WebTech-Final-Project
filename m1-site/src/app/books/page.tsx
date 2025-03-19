@@ -3,21 +3,29 @@ import React from 'react'
 import { BookModel } from '../models/BookModel';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button } from 'react-bootstrap';
+import { CreateBookModel } from '../models/BookModel';
+import CreateBookModal from '../components/CreateBookModal';
 
 export default function BookList() {
-
-
-    // https://www.youtube.com/watch?v=_UUWYs1Ra9w video to filter by table tutorial
     
     // Books repository
     const [books, setBooks] = useState<BookModel[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+
+    const [newBook, setNewBook] = useState<CreateBookModel>({
+      title: '',
+      publishedYear: 0,
+      averageRating: 0,
+      price: 0,
+      authorId: '',
+    })
+
 
     // Populates the book variable with data
     useEffect(() => {
         loadBooks();
-
     }, []);
 
     // API call to get the books from the database
@@ -25,11 +33,22 @@ export default function BookList() {
         axios.get('http://localhost:3001/api/books')
         .then((data) => {
           setBooks(data.data)
-          console.log(data.data)
         })
         .catch((err) => {
           console.error(err)
         })
+      }
+
+      const createBook = (input: CreateBookModel) => {
+        axios.post('http://localhost:3001/api/books', input)
+        .then((data) => {
+          setBooks((prev) => [...(prev ?? []), data.data])
+        })
+        .catch((error) => console.log(error))
+      }
+
+      const createNewBook = () => {
+        setIsOpen(true);
       }
 
       const handleSelect = () => {
@@ -40,11 +59,18 @@ export default function BookList() {
       setSearchQuery(event.target.value);
     }
 
+    const filteredBooks = books.filter(book => 
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      book.publishedYear.toString().includes(searchQuery)
+    );
+
   return (
     <div>
         <p>List of Books</p>
         <div>
-        <input type="text" placeholder='Filtrar libros...' value={searchQuery} onChange={handleSearch}></input>
+        <input type="text" placeholder='Filter books...' value={searchQuery} onChange={handleSearch}></input>
+        <button onClick={createNewBook}>Create Book</button>
+        { isOpen &&  <CreateBookModal/> }
         <table>
           <thead>
             <tr>
@@ -54,14 +80,14 @@ export default function BookList() {
             </tr>
           </thead>
           <tbody>
-            {books?.map((book) => (
+            {filteredBooks?.map((book) => (
               <tr key={book.id} onClick={() => handleSelect()}>
                 <td>{book.title}</td>
                 <td>{book.publishedYear}</td>
                 <td>{book.price}</td>
                 <td>
                 <button onClick={() => console.log('hola!')}>
-                  Accion
+                  Action
                 </button>
                 </td>
               </tr>
