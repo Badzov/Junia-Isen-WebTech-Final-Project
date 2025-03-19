@@ -8,8 +8,8 @@ function App() {
     <p>Our team is composed of</p>
     <li>Eugenio Pedraza</li>
     <li>Vukasin Badzov</li>
-    <li>Anastassia Shulhina</li>
-    <li>...</li>
+    <li>Anastasiia Shulhina</li>
+    <li>Daulet Oshan</li>
     </div>
   )
 }

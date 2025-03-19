@@ -14,14 +14,15 @@ export default function BookList() {
     const [books, setBooks] = useState<BookModel[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
-    const [isSortedAsc, setIsSortedAsc] = useState(true);
+    const [isSortedAsc, setIsSortedAsc] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
-    const [open, setOpen] = useState(false);
     const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+    const [authors, setAuthors] = useState([]);
 
     // Populates the book variable with data
     useEffect(() => {
         loadBooks();
+        loadAuthors();
     }, []);
 
     // API call to get the books from the database
@@ -35,12 +36,18 @@ export default function BookList() {
         })
       }
 
+    const loadAuthors = () => {
+      axios.get('http://localhost:3001/api/authors')
+      .then((response) => {
+        setAuthors(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+    }
+
       const createNewBook = () => {
         setIsOpen(true);
-      }
-
-      const handleSelect = () => {
-        console.log('test');
       }
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,8 +55,7 @@ export default function BookList() {
     }
 
     const filteredBooks = books.filter(book => 
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      book.publishedYear.toString().includes(searchQuery)
+      book.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const handleSaveBook = (newBook) => {
@@ -77,26 +83,26 @@ export default function BookList() {
         <p>List of Books</p>
         <div>
         <input type="text" placeholder='Filter books...' value={searchQuery} onChange={handleSearch}></input>
-        <button onClick={createNewBook}>Create Book</button>
-        <button onClick={sortBooks}>Sort</button>
+        <button onClick={createNewBook} style={{marginLeft: "20px"}}>Create Book</button>
+        <button onClick={sortBooks} style={{marginLeft: "20px"}}>Sort</button>
         { isOpen &&  <CreateBookModal onClose={() => setIsOpen(false)} onSave={handleSaveBook}/> }
         <table>
-          <thead>
+          <thead >
             <tr>
-              <th>Book's Title</th>
-              <th>Author's Name</th>
-              <th>Published Year</th>
+              <th style={{ padding: "0 30px" }}>Book's Title</th>
+              <th style={{ padding: "0 30px" }}>Author's Name</th>
+              <th style={{ padding: "0 30px" }}>Published Year</th>
             </tr>
           </thead>
           <tbody>
             {filteredBooks?.map((book) => (
-              <tr key={book.id} onClick={() => handleSelect()}>
-                <td>{book.title}</td>
-                <td>{book.price}</td>
-                <td>{book.publishedYear}</td>
+              <tr key={book.id}>
+                <td style={{ padding: "0 30px" }}>{book.title}</td>
+                <td style={{ padding: "0 30px" }}>{authors.find(author => author.id === book.authorId)?.name || "Unknown"}</td>
+                <td style={{ padding: "0 30px" }}>{book.publishedYear}</td>
                 <td>
                   <Link href={`/books/${book.id}`}>
-                    <button>
+                    <button style={{marginRight: "10px"}}>
                       Details
                     </button>
                 </Link>
@@ -123,7 +129,7 @@ export default function BookList() {
                 textAlign: 'center'
               }}>
                 <p>Are you sure you want to delete the book?</p>
-                <button onClick={() => {deleteBook(selectedBookId); setDeleteModal(false)}}>Delete</button>
+                <button style={{marginRight: "10px", backgroundColor: "red" }}onClick={() => {deleteBook(selectedBookId); setDeleteModal(false)}}>Delete</button>
                 <button onClick={() => setDeleteModal(false)}>Cancel</button>
               </div>
             </Box>
