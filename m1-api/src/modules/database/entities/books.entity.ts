@@ -21,10 +21,13 @@ export class BookEntity extends BaseEntity {
   @Column({ name: 'publishedYear', type: 'int' })
   publishedYear: number;
 
-  @Column({ name: 'averageRating', type: 'float' })
+  @Column({ name: 'price', type: 'float' })
+  price: number;
+
+  @Column({ name: 'averageRating', type: 'float', default: 0})
   averageRating: number;
 
-  @Column({ name: 'authorId', type: 'uuid' })
+  @Column({ name: 'authorId', type: 'uuid', nullable: true, default: null })
   authorId: AuthorId;
 
   @ManyToOne(() => AuthorEntity, { onDelete: 'CASCADE' })

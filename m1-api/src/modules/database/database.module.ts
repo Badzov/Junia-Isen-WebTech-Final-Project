@@ -13,7 +13,6 @@ import { BookEntity } from './entities/books.entity';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    TypeOrmModule.forFeature([AuthorEntity, BookEntity]),
   ],
 })
 export class DatabaseModule {}

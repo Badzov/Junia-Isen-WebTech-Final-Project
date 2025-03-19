@@ -5,13 +5,4 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('greet/:name')
-  public async greetMe(@Param('name') name: string): Promise<string> {
-    return `Hello ${name}`;
-  }
-
-  @Get('hello')
-  public async getHello(): Promise<string> {
-    return this.appService.getHello();
-  }
 }
