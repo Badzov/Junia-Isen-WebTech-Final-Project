@@ -3,8 +3,10 @@ import React from 'react'
 import { BookModel } from '../models/BookModel';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CreateBookModel } from '../models/BookModel';
 import CreateBookModal from '../components/CreateBookModal';
+import { Modal } from '@mui/material';
+import { Box } from '@mui/material';
+import Link from 'next/link';
 
 export default function BookList() {
     
@@ -13,7 +15,9 @@ export default function BookList() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [isSortedAsc, setIsSortedAsc] = useState(true);
-
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
     // Populates the book variable with data
     useEffect(() => {
@@ -61,6 +65,13 @@ export default function BookList() {
       setIsSortedAsc(!isSortedAsc);
     }
 
+    const deleteBook = (id: string) => {
+      axios.delete(`http://localhost:3001/api/books/${id}`)
+      .then(() => {
+        setBooks((prev) => (prev ?? []).filter((book) => book.id !== id))
+      })
+    }
+
   return (
     <div>
         <p>List of Books</p>
@@ -81,17 +92,44 @@ export default function BookList() {
             {filteredBooks?.map((book) => (
               <tr key={book.id} onClick={() => handleSelect()}>
                 <td>{book.title}</td>
-                <td>{book.publishedYear}</td>
                 <td>{book.price}</td>
+                <td>{book.publishedYear}</td>
                 <td>
-                <button onClick={() => console.log('hola!')}>
-                  Action
-                </button>
+                  <Link href={`/books/${book.id}`}>
+                    <button>
+                      Details
+                    </button>
+                </Link>
+                <button onClick={() => { setSelectedBookId(book.id); setDeleteModal(true); }}>Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {deleteModal && 
+        <div>
+          <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh'
+            }}>
+              <div style={{
+                backgroundColor: '#ffffff',
+                padding: '20px',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'center'
+              }}>
+                <p>Are you sure you want to delete the book?</p>
+                <button onClick={() => {deleteBook(selectedBookId); setDeleteModal(false)}}>Delete</button>
+                <button onClick={() => setDeleteModal(false)}>Cancel</button>
+              </div>
+            </Box>
+          </Modal>
+        </div>
+        }
         </div>
     </div>
   )
