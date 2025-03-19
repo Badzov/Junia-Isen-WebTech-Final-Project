@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
     <p>Welcome to our book manager website...</p>
-    <p>Our team is composed of</p>
+    <p>Our team is composed by</p>
     <li>Eugenio Pedraza</li>
     <li>Vukasin Badzov</li>
     <li>Anastasiia Shulhina</li>

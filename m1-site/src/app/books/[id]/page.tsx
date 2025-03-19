@@ -7,8 +7,8 @@ import Link from "next/link";
 export default function BookDetails() {
   const { id } = useParams(); 
   const [book, setBook] = useState(null);
-  const [authors, setAuthors] = useState(null);
-  const [author, setAuthor] = useState("Unknown");
+  const [authors, setAuthors] = useState([]);
+  const [author, setAuthor] = useState({ id: "unknown", name: "Unknown" });
 
   useEffect(() => {
     loadAuthors();
@@ -23,13 +23,6 @@ export default function BookDetails() {
     } 
   }, [id]);
 
-  useEffect(() => {
-    if (book && authors.length > 0) {
-      const foundAuthor = authors.find(author => author.id === book.authorId)?.name || "Unknown";
-      setAuthor(foundAuthor);
-    }
-  }, [book, authors]);
-
   const loadAuthors = () => {
     axios.get('http://localhost:3001/api/authors')
       .then(response => {
@@ -40,6 +33,13 @@ export default function BookDetails() {
       });
   };
 
+  useEffect(() => {
+    if (book && authors.length > 0) {
+      const foundAuthor = authors.find(author => author.id === book.authorId) || { id: "unknown", name: "Unknown" };
+      setAuthor(foundAuthor);
+    }
+  }, [book, authors]);
+
 
   if (!book) return <p>Loading book details...</p>;
 
@@ -47,9 +47,12 @@ export default function BookDetails() {
     <>
     <div style={{ padding: "20px" }}>
       <h1>{book.title}</h1>
-      <p><strong>Author:</strong> {author}</p>
+      <Link href={`/authors/${author.id}`}>
+        <p><strong>Author:</strong> {author.name}</p>
+      </Link>
       <p><strong>Published Year:</strong> {book.publishedYear}</p>
       <p><strong>Price:</strong> ${book.price}</p>
+      <p><strong>Rating:</strong> {book.averageRating}/5</p>
     </div>
     <div>
         <Link href="/books">
