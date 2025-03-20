@@ -1,8 +1,8 @@
 "use client";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useBooks } from "../../hooks/useBooks";
-import { useAuthors } from "../../hooks/useAuthors";
+import { useBooks } from "../../../hooks/useBooks";
+import { useAuthors } from "../../../hooks/useAuthors";
 import Link from "next/link";
 
 export default function BookDetails() {

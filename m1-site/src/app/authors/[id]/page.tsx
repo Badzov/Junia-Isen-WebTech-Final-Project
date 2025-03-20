@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useAuthors } from "../../hooks/useAuthors";
+import { useAuthors } from "../../../hooks/useAuthors";
 import Link from "next/link";
 
 export default function AuthorDetails() {

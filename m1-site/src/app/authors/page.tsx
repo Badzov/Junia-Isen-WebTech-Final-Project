@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useAuthors } from "../hooks/useAuthors";
-import { AuthorTable } from "../components/AuthorTable";
-import { SearchBar } from "../components/SearchBar";
-import CreateAuthorModal from "../components/modals/CreateAuthorModal";
-import DeleteAuthorModal from "../components/modals/DeleteAuthorModal";
-import { CreateAuthorModel } from "../models/AuthorModel";
+import { useAuthors } from "../../hooks/useAuthors";
+import { AuthorTable } from "../../components/AuthorTable";
+import { SearchBar } from "../../components/SearchBar";
+import CreateAuthorModal from "../../components/modals/CreateAuthorModal";
+import DeleteAuthorModal from "../../components/modals/DeleteAuthorModal";
+import { CreateAuthorModel } from "../../models/AuthorModel";
 
 export default function ListAuthors() {
   const {

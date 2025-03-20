@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useBooks } from "../hooks/useBooks";
-import { useAuthors } from "../hooks/useAuthors";
-import CreateBookModal from "../components/modals/CreateBookModal";
-import DeleteBookModal from "../components/modals/DeleteBookModal";
-import { BookTable } from "../components/BookTable";
-import { CreateBookModel } from "../models/BookModel";
+import { useBooks } from "../../hooks/useBooks";
+import { useAuthors } from "../../hooks/useAuthors";
+import CreateBookModal from "../../components/modals/CreateBookModal";
+import DeleteBookModal from "../../components/modals/DeleteBookModal";
+import { BookTable } from "../../components/BookTable";
+import { CreateBookModel } from "../../models/BookModel";
 
 export default function BookList() {
   const {
