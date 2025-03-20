@@ -1,149 +1,131 @@
-"use client"
-import React from 'react'
-import { BookModel } from '../models/BookModel';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import CreateBookModal from '../components/CreateBookModal';
-import { Modal } from '@mui/material';
-import { Box } from '@mui/material';
-import Link from 'next/link';
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { BookModel, CreateBookModel } from "../models/BookModel";
+import { AuthorModel } from "../models/AuthorModel";
+import CreateBookModal from "../components/modals/CreateBookModal";
+import DeleteBookModal from "../components/modals/DeleteBookModal";
+import Link from "next/link";
 
 export default function BookList() {
-    
-    // Books repository
-    const [books, setBooks] = useState<BookModel[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
-    const [isSortedAsc, setIsSortedAsc] = useState(false);
-    const [deleteModal, setDeleteModal] = useState(false);
-    const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-    const [authors, setAuthors] = useState([]);
+  const [books, setBooks] = useState<BookModel[]>([]);
+  const [authors, setAuthors] = useState<AuthorModel[]>([]);
+  const [isCreateBookModalOpen, setIsCreateBookModalOpen] = useState(false);
+  const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
-    // Populates the book variable with data
-    useEffect(() => {
-        loadBooks();
-        loadAuthors();
-    }, []);
+  // Load books and authors from the backend
+  const loadBooks = () => {
+    axios
+      .get("http://localhost:3001/api/books")
+      .then((response) => {
+        setBooks(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-    // API call to get the books from the database
-    const loadBooks = () => {
-        axios.get('http://localhost:3001/api/books')
-        .then((data) => {
-          setBooks(data.data)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-      }
-
-      // Loads the existing authors from the API
-    const loadAuthors = () => {
-      axios.get('http://localhost:3001/api/authors')
+  const loadAuthors = () => {
+    axios
+      .get("http://localhost:3001/api/authors")
       .then((response) => {
         setAuthors(response.data);
       })
       .catch((error) => {
         console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    loadBooks();
+    loadAuthors();
+  }, []);
+
+  // Handle creating a new book
+  const handleCreateBook = (newBook: CreateBookModel) => {
+    axios
+      .post("http://localhost:3001/api/books", newBook)
+      .then((response) => {
+        console.log("Book created successfully:", response.data);
+        loadBooks(); // Reload books after creation
       })
-    }
+      .catch((error) => {
+        console.error("Failed to create book:", error);
+      });
+  };
 
-    // Opens modal to create the new book
-      const createNewBook = () => {
-        setIsOpen(true);
-      }
-
-      // Fills the variable with the current search query
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-    }
-
-    // filters the book by title
-    const filteredBooks = books.filter(book => 
-      book.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    // Adds the new book to the repository
-    const handleSaveBook = (newBook) => {
-      setBooks([...books, newBook]);
-      loadBooks();
-    }
-
-    // Function to sort the book is descending or ascending order by their title
-    const sortBooks = () => {
-      const sortedBooks = [...books].sort((a,b) => {
-        return isSortedAsc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
-      })
-      setBooks(sortedBooks);
-      setIsSortedAsc(!isSortedAsc);
-    }
-
-    // Makes API call to delete the book by ID
-    const deleteBook = (id: string) => {
-      axios.delete(`http://localhost:3001/api/books/${id}`)
+  // Handle deleting a book
+  const handleDeleteBook = (id: string) => {
+    axios
+      .delete(`http://localhost:3001/api/books/${id}`)
       .then(() => {
-        setBooks((prev) => (prev ?? []).filter((book) => book.id !== id))
+        loadBooks(); // Reload books after deletion
+        setIsDeleteBookModalOpen(false); // Close the modal
       })
-    }
+      .catch((error) => {
+        console.error("Failed to delete book:", error);
+      });
+  };
 
   return (
     <div>
-        <p>List of Books</p>
-        <div>
-        <input type="text" placeholder='Filter books...' value={searchQuery} onChange={handleSearch}></input>
-        <button onClick={createNewBook} style={{marginLeft: "20px"}}>Create Book</button>
-        <button onClick={sortBooks} style={{marginLeft: "20px"}}>Sort</button>
-        { isOpen &&  <CreateBookModal onClose={() => setIsOpen(false)} onSave={handleSaveBook}/> }
+      <p>List of Books</p>
+      <div>
+        <button onClick={() => setIsCreateBookModalOpen(true)}>
+          Create Book
+        </button>
+        {isCreateBookModalOpen && (
+          <CreateBookModal
+            isOpen={isCreateBookModalOpen}
+            onClose={() => setIsCreateBookModalOpen(false)}
+            onSave={handleCreateBook}
+            authors={authors}
+          />
+        )}
         <table>
-          <thead >
+          <thead>
             <tr>
-              <th style={{ padding: "0 30px" }}>Book's Title</th>
-              <th style={{ padding: "0 30px" }}>Author's Name</th>
-              <th style={{ padding: "0 30px" }}>Published Year</th>
+              <th>Book's Title</th>
+              <th>Author's Name</th>
+              <th>Published Year</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredBooks?.map((book) => (
+            {books.map((book) => (
               <tr key={book.id}>
-                <td style={{ padding: "0 30px" }}>{book.title}</td>
-                <td style={{ padding: "0 30px" }}>{authors.find(author => author.id === book.authorId)?.name || "Unknown"}</td>
-                <td style={{ padding: "0 30px" }}>{book.publishedYear}</td>
+                <td>{book.title}</td>
+                <td>
+                  {authors.find((author) => author.id === book.authorId)
+                    ?.name || "Unknown"}
+                </td>
+                <td>{book.publishedYear}</td>
                 <td>
                   <Link href={`/books/${book.id}`}>
-                    <button style={{marginRight: "10px"}}>
-                      Details
-                    </button>
-                </Link>
-                <button onClick={() => { setSelectedBookId(book.id); setDeleteModal(true); }}>Delete</button>
+                    <button>Details</button>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setSelectedBookId(book.id);
+                      setIsDeleteBookModalOpen(true);
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {deleteModal && 
-        <div>
-          <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
-            <Box sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100vh'
-            }}>
-              <div style={{
-                backgroundColor: '#ffffff',
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                textAlign: 'center'
-              }}>
-                <p>Are you sure you want to delete the book?</p>
-                <button style={{marginRight: "10px", backgroundColor: "red" }}onClick={() => {deleteBook(selectedBookId); setDeleteModal(false)}}>Delete</button>
-                <button onClick={() => setDeleteModal(false)}>Cancel</button>
-              </div>
-            </Box>
-          </Modal>
-        </div>
-        }
-        </div>
+        {isDeleteBookModalOpen && (
+          <DeleteBookModal
+            isOpen={isDeleteBookModalOpen}
+            onClose={() => setIsDeleteBookModalOpen(false)}
+            onDelete={() => handleDeleteBook(selectedBookId!)}
+          />
+        )}
+      </div>
     </div>
-  )
+  );
 }

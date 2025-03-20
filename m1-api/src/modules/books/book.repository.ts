@@ -34,7 +34,7 @@ export class BookRepository {
     return query.getMany();
   }
 
-  public async getBook(id: string, p0: { relations: string[]; }): Promise<BookModel> {
+  public async getBook(id: string): Promise<BookModel> {
     return this.bookRepository.findOne({ where: { id: id as BookId } });
   }
 

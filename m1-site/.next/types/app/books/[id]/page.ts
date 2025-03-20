@@ -1,4 +1,4 @@
-// File: /Users/pedraza/Desktop/web-development/m1-site/src/app/books/[id]/page.tsx
+// File: C:\Users\user\Desktop\Junia Courses\Web Technologies\Final Project\web-development-junia\m1-site\src\app\books\[id]\page.tsx
 import * as entry from '../../../../../src/app/books/[id]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

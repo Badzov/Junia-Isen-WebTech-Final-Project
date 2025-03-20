@@ -1,134 +1,156 @@
-"use client"
-import React from 'react';
-import axios from 'axios';
-import { AuthorModel } from '../models/AuthorModel';
-import { useState, useEffect } from 'react';
-import CreateAuthorModal from '../components/CreateAuthorModal';
-import { Modal } from '@mui/material';
-import { Box } from '@mui/material';
-import Link from 'next/link';
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { AuthorModel } from "../models/AuthorModel";
+import CreateAuthorModal from "../components/modals/CreateAuthorModal";
+import DeleteAuthorModal from "../components/modals/DeleteAuthorModal";
+import Link from "next/link";
 
 export default function ListAuthors() {
-    // Authors repository
-    const [authors, setAuthors] = useState<AuthorModel[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
-    const [isSortedAsc, setIsSortedAsc] = useState(false);
-    const [deleteModal, setDeleteModal] = useState(false);
-    const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
+  const [authors, setAuthors] = useState<AuthorModel[]>([]);
+  const [isCreateAuthorModalOpen, setIsCreateAuthorModalOpen] = useState(false);
+  const [isDeleteAuthorModalOpen, setIsDeleteAuthorModalOpen] = useState(false);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
 
-    // Populates the author variable with data
-    useEffect(() => {
-        loadAuthors();
-    }, []);
+  // Load authors from the backend
+  const loadAuthors = (search?: string, sortOrder: "ASC" | "DESC" = "ASC") => {
+    const params = {
+      search,
+      sortBy: "name", // You can make this dynamic if needed
+      sortOrder,
+    };
 
-    // Loads the authors from the API call
-    const loadAuthors = () => {
-      axios.get('http://localhost:3001/api/authors')
+    axios
+      .get("http://localhost:3001/api/authors", { params })
       .then((response) => {
         setAuthors(response.data);
       })
       .catch((error) => {
         console.error(error);
-      })
-    }
+      });
+  };
 
-    // Use to open and close the modal
-    const createNewAuthor = () => {
-        setIsOpen(true);
-    }
+  // Load authors when the component mounts
+  useEffect(() => {
+    loadAuthors();
+  }, []);
 
-    // Recieves the search query from the filtering bar
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-    }
+  // Open the create author modal
+  const openCreateAuthorModal = () => {
+    setIsCreateAuthorModalOpen(true);
+  };
 
-    // Filters the authors by name
-    const filteredAuthors = authors.filter(author => 
-      author.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    // Adds new author to the model
-    const handleSaveAuthor = (newAuthor) => {
-      setAuthors([...authors, newAuthor]);
-    }
-
-    // Function to sort the authors using comparisons, and depending of the state of sorted it will change between ascending and descending
-    const sortAuthors = () => {
-      const sortedAuthors = [...authors].sort((a,b) => {
-        return isSortedAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-      })
-      setAuthors(sortedAuthors);
-      setIsSortedAsc(!isSortedAsc);
-    }
-
-    // API call to delete the book
-    const deleteBook = (id: string) => {
-      axios.delete(`http://localhost:3001/api/authors/${id}`)
+  // Save a new author and reload the authors from the backend
+  const handleCreateAuthor = (newAuthor: {
+    name: string;
+    biography: string;
+    photoURL: string;
+  }) => {
+    axios
+      .post("http://localhost:3001/api/authors", newAuthor)
       .then(() => {
-        setAuthors((prev) => (prev ?? []).filter((author) => author.id !== id))
+        loadAuthors(); // Reload authors after creation
+        setIsCreateAuthorModalOpen(false); // Close the modal
       })
-    }
+      .catch((error) => {
+        console.error("Failed to create author:", error);
+        alert("Failed to create author. Please try again.");
+      });
+  };
 
-    return (
+  // Delete an author and reload the authors from the backend
+  const handleDeleteAuthor = (id: string) => {
+    axios
+      .delete(`http://localhost:3001/api/authors/${id}`)
+      .then(() => {
+        loadAuthors(); // Reload authors from the backend
+        setIsDeleteAuthorModalOpen(false); // Close the delete confirmation modal
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  return (
     <div>
-        <p>List of Authors</p>
-        <div>
-        <input type="text" placeholder='Filter authors...' value={searchQuery} onChange={handleSearch}></input>
-        <button onClick={createNewAuthor} style={{marginLeft: "20px"}}>Create Author</button>
-        <button onClick={sortAuthors} style={{marginLeft: "20px"}}>Sort</button>
-        { isOpen &&  <CreateAuthorModal onClose={() => setIsOpen(false)} onSave={handleSaveAuthor}/> }
+      <p>List of Authors</p>
+      <div>
+        <input
+          type="text"
+          placeholder="Filter authors..."
+          onChange={(e) => loadAuthors(e.target.value)} // Filter authors as the user types
+        />
+        <button onClick={openCreateAuthorModal} style={{ marginLeft: "20px" }}>
+          Create Author
+        </button>
+        <button
+          onClick={() => loadAuthors(undefined, "ASC")}
+          style={{ marginLeft: "20px" }}
+        >
+          Sort Ascending
+        </button>
+        <button
+          onClick={() => loadAuthors(undefined, "DESC")}
+          style={{ marginLeft: "20px" }}
+        >
+          Sort Descending
+        </button>
+        {isCreateAuthorModalOpen && (
+          <CreateAuthorModal
+            isOpen={isCreateAuthorModalOpen}
+            onClose={() => setIsCreateAuthorModalOpen(false)}
+            onSave={handleCreateAuthor}
+          />
+        )}
         <table>
-          <thead >
+          <thead>
             <tr>
               <th style={{ padding: "0 30px" }}>Author's Name</th>
               <th style={{ padding: "0 30px" }}>Number of Books</th>
               <th style={{ padding: "0 30px" }}>Picture</th>
+              <th style={{ padding: "0 30px" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredAuthors?.map((author) => (
+            {authors.map((author) => (
               <tr key={author.id}>
                 <td style={{ padding: "0 30px" }}>{author.name}</td>
-                <td style={{ padding: "0 30px" }}>{author.numberOfBooksWritten}</td>
-                <td style={{ padding: "0 30px" }}><img src={author.photoURL} alt={"No Image"} width="140" height="100"></img></td>
-                <td>
+                <td style={{ padding: "0 30px" }}>
+                  {author.numberOfBooksWritten}
+                </td>
+                <td style={{ padding: "0 30px" }}>
+                  <img
+                    src={author.photoURL}
+                    alt={"No Image"}
+                    width="140"
+                    height="100"
+                  />
+                </td>
+                <td style={{ padding: "0 30px" }}>
                   <Link href={`/authors/${author.id}`}>
-                    <button style={{marginRight: "10px"}}>
-                      Details
-                    </button>
-                </Link>
-                <button onClick={() => { setSelectedAuthorId(author.id); setDeleteModal(true); }}>Delete</button>
+                    <button style={{ marginRight: "10px" }}>Details</button>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setSelectedAuthorId(author.id);
+                      setIsDeleteAuthorModalOpen(true);
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {deleteModal && 
-        <div>
-          <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
-            <Box sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100vh'
-            }}>
-              <div style={{
-                backgroundColor: '#ffffff',
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                textAlign: 'center'
-              }}>
-                <p>Are you sure you want to delete the author?</p>
-                <button style={{marginRight: "10px", backgroundColor: "red" }}onClick={() => {deleteBook(selectedAuthorId); setDeleteModal(false)}}>Delete</button>
-                <button onClick={() => setDeleteModal(false)}>Cancel</button>
-              </div>
-            </Box>
-          </Modal>
-        </div>
-        }
-        </div>
+        {isDeleteAuthorModalOpen && (
+          <DeleteAuthorModal
+            isOpen={isDeleteAuthorModalOpen}
+            onClose={() => setIsDeleteAuthorModalOpen(false)}
+            onDelete={() => handleDeleteAuthor(selectedAuthorId!)}
+          />
+        )}
+      </div>
     </div>
-    )
+  );
 }
