@@ -45,31 +45,13 @@ const CreateAuthorModal: React.FC<CreateAuthorModalProps> = ({
 
   return (
     <Modal open={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            textAlign: "center",
-            width: "400px",
-          }}
-        >
-          <h2>Add a New Author</h2>
-          {error && (
-            <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
-          )}
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Name</b>
+      <Box className="flex justify-center items-center h-screen">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+          <h2 className="text-2xl font-bold mb-4">Add a New Author</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Name
             </label>
             <input
               type="text"
@@ -78,12 +60,12 @@ const CreateAuthorModal: React.FC<CreateAuthorModalProps> = ({
               required
               value={author.name}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Biography</b>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Biography
             </label>
             <textarea
               placeholder="Biography"
@@ -91,17 +73,12 @@ const CreateAuthorModal: React.FC<CreateAuthorModalProps> = ({
               required
               value={author.biography}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "8px",
-                marginTop: "5px",
-                height: "100px",
-              }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Photo URL</b>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Photo URL
             </label>
             <input
               type="text"
@@ -110,31 +87,19 @@ const CreateAuthorModal: React.FC<CreateAuthorModalProps> = ({
               required
               value={author.photoURL}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginTop: "20px" }}>
+          <div className="mt-6">
             <button
               onClick={onClose}
-              style={{
-                marginRight: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#f0f0f0",
-                border: "none",
-                borderRadius: "4px",
-              }}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 mr-2"
             >
               Close
             </button>
             <button
               onClick={handleSave}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Save
             </button>

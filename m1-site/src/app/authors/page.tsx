@@ -6,6 +6,7 @@ import { SearchBar } from "../../components/SearchBar";
 import CreateAuthorModal from "../../components/modals/CreateAuthorModal";
 import DeleteAuthorModal from "../../components/modals/DeleteAuthorModal";
 import { CreateAuthorModel } from "../../models/AuthorModel";
+import { PageTitle } from "../../components/PageTitle";
 
 export default function ListAuthors() {
   const {
@@ -54,17 +55,17 @@ export default function ListAuthors() {
   };
 
   if (authorsLoading) {
-    return <p>Loading...</p>;
+    return <p className="text-center text-gray-600">Loading...</p>;
   }
 
   if (authorsError) {
-    return <p>Error: {authorsError}</p>;
+    return <p className="text-center text-red-600">Error: {authorsError}</p>;
   }
 
   return (
-    <div>
-      <p>List of Authors</p>
-      <div>
+    <div className="p-6">
+      <PageTitle title="List of Authors" /> {/* Add PageTitle here */}
+      <div className="mb-4">
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -72,44 +73,44 @@ export default function ListAuthors() {
         />
         <button
           onClick={() => setIsCreateAuthorModalOpen(true)}
-          style={{ marginLeft: "20px" }}
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Create Author
         </button>
         <button
           onClick={() => fetchAuthors(undefined, "name", "ASC")}
-          style={{ marginLeft: "20px" }}
+          className="ml-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
           Sort Ascending
         </button>
         <button
           onClick={() => fetchAuthors(undefined, "name", "DESC")}
-          style={{ marginLeft: "20px" }}
+          className="ml-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
           Sort Descending
         </button>
-        {isCreateAuthorModalOpen && (
-          <CreateAuthorModal
-            isOpen={isCreateAuthorModalOpen}
-            onClose={() => setIsCreateAuthorModalOpen(false)}
-            onSave={handleCreateAuthor}
-          />
-        )}
-        <AuthorTable
-          authors={authors}
-          onDelete={(id) => {
-            setSelectedAuthorId(id);
-            setIsDeleteAuthorModalOpen(true);
-          }}
-        />
-        {isDeleteAuthorModalOpen && (
-          <DeleteAuthorModal
-            isOpen={isDeleteAuthorModalOpen}
-            onClose={() => setIsDeleteAuthorModalOpen(false)}
-            onDelete={() => handleDeleteAuthor(selectedAuthorId!)}
-          />
-        )}
       </div>
+      {isCreateAuthorModalOpen && (
+        <CreateAuthorModal
+          isOpen={isCreateAuthorModalOpen}
+          onClose={() => setIsCreateAuthorModalOpen(false)}
+          onSave={handleCreateAuthor}
+        />
+      )}
+      <AuthorTable
+        authors={authors}
+        onDelete={(id) => {
+          setSelectedAuthorId(id);
+          setIsDeleteAuthorModalOpen(true);
+        }}
+      />
+      {isDeleteAuthorModalOpen && (
+        <DeleteAuthorModal
+          isOpen={isDeleteAuthorModalOpen}
+          onClose={() => setIsDeleteAuthorModalOpen(false)}
+          onDelete={() => handleDeleteAuthor(selectedAuthorId!)}
+        />
+      )}
     </div>
   );
 }

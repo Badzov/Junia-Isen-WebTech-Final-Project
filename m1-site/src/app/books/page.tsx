@@ -6,6 +6,7 @@ import CreateBookModal from "../../components/modals/CreateBookModal";
 import DeleteBookModal from "../../components/modals/DeleteBookModal";
 import { BookTable } from "../../components/BookTable";
 import { CreateBookModel } from "../../models/BookModel";
+import { PageTitle } from "../../components/PageTitle";
 
 export default function BookList() {
   const {
@@ -49,44 +50,51 @@ export default function BookList() {
   };
 
   if (booksLoading || authorsLoading) {
-    return <p>Loading...</p>;
+    return <p className="text-center text-gray-600">Loading...</p>;
   }
 
   if (booksError || authorsError) {
-    return <p>Error: {booksError || authorsError}</p>;
+    return (
+      <p className="text-center text-red-600">
+        Error: {booksError || authorsError}
+      </p>
+    );
   }
 
   return (
-    <div>
-      <p>List of Books</p>
-      <div>
-        <button onClick={() => setIsCreateBookModalOpen(true)}>
+    <div className="p-6">
+      <PageTitle title="List of Books" />
+      <div className="mb-4">
+        <button
+          onClick={() => setIsCreateBookModalOpen(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
           Create Book
         </button>
-        {isCreateBookModalOpen && (
-          <CreateBookModal
-            isOpen={isCreateBookModalOpen}
-            onClose={() => setIsCreateBookModalOpen(false)}
-            onSave={handleCreateBook}
-            authors={authors}
-          />
-        )}
-        <BookTable
-          books={books}
-          authors={authors}
-          onDelete={(id) => {
-            setSelectedBookId(id);
-            setIsDeleteBookModalOpen(true);
-          }}
-        />
-        {isDeleteBookModalOpen && (
-          <DeleteBookModal
-            isOpen={isDeleteBookModalOpen}
-            onClose={() => setIsDeleteBookModalOpen(false)}
-            onDelete={() => handleDeleteBook(selectedBookId!)}
-          />
-        )}
       </div>
+      {isCreateBookModalOpen && (
+        <CreateBookModal
+          isOpen={isCreateBookModalOpen}
+          onClose={() => setIsCreateBookModalOpen(false)}
+          onSave={handleCreateBook}
+          authors={authors}
+        />
+      )}
+      <BookTable
+        books={books}
+        authors={authors}
+        onDelete={(id) => {
+          setSelectedBookId(id);
+          setIsDeleteBookModalOpen(true);
+        }}
+      />
+      {isDeleteBookModalOpen && (
+        <DeleteBookModal
+          isOpen={isDeleteBookModalOpen}
+          onClose={() => setIsDeleteBookModalOpen(false)}
+          onDelete={() => handleDeleteBook(selectedBookId!)}
+        />
+      )}
     </div>
   );
 }

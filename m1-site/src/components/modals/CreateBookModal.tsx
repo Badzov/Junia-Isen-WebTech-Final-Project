@@ -25,85 +25,34 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
 
   const [error, setError] = useState("");
 
-  // Handle input changes
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
-
-    // Allow empty strings temporarily
-    let parsedValue: number | string = value;
-
-    if (name === "publishedYear" || name === "price") {
-      // If the value is an empty string, keep it as an empty string
-      parsedValue = value === "" ? "" : Number(value);
-    }
-
-    console.log(
-      `Field: ${name}, Value: ${value}, Parsed Value: ${parsedValue}`
-    ); // Debugging
-
     setBook((prevBook) => ({
       ...prevBook,
-      [name]: parsedValue,
+      [name]: value,
     }));
   };
 
-  // Handle saving the book
   const handleSave = () => {
-    console.log("Book data:", book);
-    console.log("Type of publishedYear:", typeof book.publishedYear);
-    console.log("Type of price:", typeof book.price);
-    // Validate required fields
     if (!book.title || !book.publishedYear || !book.price || !book.authorId) {
       setError("Please fill in all required fields.");
       return;
     }
-
-    // Validate published year and price
-    if (book.publishedYear > new Date().getFullYear() || book.price < 0) {
-      setError("Please enter a valid published year and price.");
-      return;
-    }
-
-    // Clear any previous errors
     setError("");
-
-    // Pass the book data to the parent component
-    console.log("Saving book:", book);
     onSave(book);
-
-    // Close the modal
-    onClose();
   };
 
   return (
     <Modal open={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            textAlign: "center",
-            width: "400px",
-          }}
-        >
-          <h2>Add a New Book</h2>
-          {error && (
-            <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
-          )}
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Book Title</b>
+      <Box className="flex justify-center items-center h-screen">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+          <h2 className="text-2xl font-bold mb-4">Add a New Book</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Book Title
             </label>
             <input
               type="text"
@@ -112,12 +61,12 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
               required
               value={book.title}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Published Year</b>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Published Year
             </label>
             <input
               type="number"
@@ -126,12 +75,12 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
               required
               value={book.publishedYear}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Price</b>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Price
             </label>
             <input
               type="number"
@@ -140,18 +89,18 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
               required
               value={book.price}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>
-              <b>Author</b>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Author
             </label>
             <select
               name="authorId"
               value={book.authorId}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select an author</option>
               {authors.map((author) => (
@@ -161,28 +110,16 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
               ))}
             </select>
           </div>
-          <div style={{ marginTop: "20px" }}>
+          <div className="mt-6">
             <button
               onClick={onClose}
-              style={{
-                marginRight: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#f0f0f0",
-                border: "none",
-                borderRadius: "4px",
-              }}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 mr-2"
             >
               Close
             </button>
             <button
               onClick={handleSave}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Save
             </button>

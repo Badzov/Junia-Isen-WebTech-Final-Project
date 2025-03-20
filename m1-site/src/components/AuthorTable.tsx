@@ -12,33 +12,49 @@ export const AuthorTable: React.FC<AuthorTableProps> = ({
   onDelete,
 }) => {
   return (
-    <table>
+    <table className="min-w-full bg-white border border-gray-200">
       <thead>
-        <tr>
-          <th style={{ padding: "0 30px" }}>Author's Name</th>
-          <th style={{ padding: "0 30px" }}>Number of Books</th>
-          <th style={{ padding: "0 30px" }}>Picture</th>
-          <th style={{ padding: "0 30px" }}>Actions</th>
+        <tr className="bg-gray-100">
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+            Author's Name
+          </th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+            Number of Books
+          </th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+            Picture
+          </th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody>
         {authors.map((author) => (
-          <tr key={author.id}>
-            <td style={{ padding: "0 30px" }}>{author.name}</td>
-            <td style={{ padding: "0 30px" }}>{author.numberOfBooksWritten}</td>
-            <td style={{ padding: "0 30px" }}>
+          <tr key={author.id} className="border-b border-gray-200">
+            <td className="px-6 py-4 text-sm text-gray-900">{author.name}</td>
+            <td className="px-6 py-4 text-sm text-gray-900">
+              {author.numberOfBooksWritten}
+            </td>
+            <td className="px-6 py-4">
               <img
                 src={author.photoURL}
                 alt={"No Image"}
-                width="140"
-                height="100"
+                className="w-24 h-16 object-cover"
               />
             </td>
-            <td style={{ padding: "0 30px" }}>
+            <td className="px-6 py-4 text-sm text-gray-900">
               <Link href={`/authors/${author.id}`}>
-                <button style={{ marginRight: "10px" }}>Details</button>
+                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
+                  Details
+                </button>
               </Link>
-              <button onClick={() => onDelete(author.id)}>Delete</button>
+              <button
+                onClick={() => onDelete(author.id)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
             </td>
           </tr>
         ))}
