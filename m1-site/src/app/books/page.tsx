@@ -1,72 +1,60 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { BookModel, CreateBookModel } from "../models/BookModel";
-import { AuthorModel } from "../models/AuthorModel";
+import React, { useEffect, useState } from "react";
+import { useBooks } from "../hooks/useBooks";
+import { useAuthors } from "../hooks/useAuthors";
 import CreateBookModal from "../components/modals/CreateBookModal";
 import DeleteBookModal from "../components/modals/DeleteBookModal";
-import Link from "next/link";
+import { BookTable } from "../components/BookTable";
+import { CreateBookModel } from "../models/BookModel";
 
 export default function BookList() {
-  const [books, setBooks] = useState<BookModel[]>([]);
-  const [authors, setAuthors] = useState<AuthorModel[]>([]);
+  const {
+    books,
+    loading: booksLoading,
+    error: booksError,
+    fetchBooks,
+    createBook,
+    deleteBook,
+  } = useBooks();
+
+  const {
+    authors,
+    loading: authorsLoading,
+    error: authorsError,
+    fetchAuthors,
+  } = useAuthors();
+
   const [isCreateBookModalOpen, setIsCreateBookModalOpen] = useState(false);
   const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] = useState(false);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
-  // Load books and authors from the backend
-  const loadBooks = () => {
-    axios
-      .get("http://localhost:3001/api/books")
-      .then((response) => {
-        setBooks(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const loadAuthors = () => {
-    axios
-      .get("http://localhost:3001/api/authors")
-      .then((response) => {
-        setAuthors(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
+  // Load books and authors when the component mounts
   useEffect(() => {
-    loadBooks();
-    loadAuthors();
-  }, []);
+    fetchBooks();
+    fetchAuthors();
+  }, [fetchBooks, fetchAuthors]);
 
   // Handle creating a new book
   const handleCreateBook = (newBook: CreateBookModel) => {
-    axios
-      .post("http://localhost:3001/api/books", newBook)
-      .then((response) => {
-        console.log("Book created successfully:", response.data);
-        loadBooks(); // Reload books after creation
-      })
-      .catch((error) => {
-        console.error("Failed to create book:", error);
-      });
+    createBook(newBook).then(() => {
+      setIsCreateBookModalOpen(false);
+    });
   };
 
   // Handle deleting a book
   const handleDeleteBook = (id: string) => {
-    axios
-      .delete(`http://localhost:3001/api/books/${id}`)
-      .then(() => {
-        loadBooks(); // Reload books after deletion
-        setIsDeleteBookModalOpen(false); // Close the modal
-      })
-      .catch((error) => {
-        console.error("Failed to delete book:", error);
-      });
+    deleteBook(id).then(() => {
+      setIsDeleteBookModalOpen(false);
+    });
   };
+
+  if (booksLoading || authorsLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (booksError || authorsError) {
+    return <p>Error: {booksError || authorsError}</p>;
+  }
 
   return (
     <div>
@@ -83,41 +71,14 @@ export default function BookList() {
             authors={authors}
           />
         )}
-        <table>
-          <thead>
-            <tr>
-              <th>Book's Title</th>
-              <th>Author's Name</th>
-              <th>Published Year</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {books.map((book) => (
-              <tr key={book.id}>
-                <td>{book.title}</td>
-                <td>
-                  {authors.find((author) => author.id === book.authorId)
-                    ?.name || "Unknown"}
-                </td>
-                <td>{book.publishedYear}</td>
-                <td>
-                  <Link href={`/books/${book.id}`}>
-                    <button>Details</button>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setSelectedBookId(book.id);
-                      setIsDeleteBookModalOpen(true);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <BookTable
+          books={books}
+          authors={authors}
+          onDelete={(id) => {
+            setSelectedBookId(id);
+            setIsDeleteBookModalOpen(true);
+          }}
+        />
         {isDeleteBookModalOpen && (
           <DeleteBookModal
             isOpen={isDeleteBookModalOpen}

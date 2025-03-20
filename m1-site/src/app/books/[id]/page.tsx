@@ -1,60 +1,47 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
-import axios from "axios";
+import { useBooks } from "../../hooks/useBooks";
+import { useAuthors } from "../../hooks/useAuthors";
 import Link from "next/link";
-import { BookModel } from "../../models/BookModel";
-import { AuthorModel } from "../../models/AuthorModel";
 
 export default function BookDetails() {
-  // Get the book ID from the URL
   const { id } = useParams<{ id: string }>();
 
-  // State for book and author details
-  const [book, setBook] = useState<BookModel | null>(null);
-  const [author, setAuthor] = useState<AuthorModel | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    book,
+    loading: bookLoading,
+    error: bookError,
+    fetchBookById,
+  } = useBooks();
 
-  // Fetch book and author details when the component mounts
+  const {
+    author,
+    loading: authorLoading,
+    error: authorError,
+    fetchAuthorById,
+  } = useAuthors();
+
   useEffect(() => {
     if (id) {
-      axios
-        .get(`http://localhost:3001/api/books/${id}`)
-        .then((response) => {
-          setBook(response.data); // Set the book data
-          // Fetch the author details using the authorId from the book
-          axios
-            .get(`http://localhost:3001/api/authors/${response.data.authorId}`)
-            .then((authorResponse) => {
-              setAuthor(authorResponse.data); // Set the author data
-            })
-            .catch((authorError) => {
-              console.error("Failed to fetch author details:", authorError);
-              setAuthor(null); // Set author to null if fetching fails
-            });
-        })
-        .catch((error) => {
-          console.error("Failed to fetch book details:", error);
-          setError("Failed to load book details. Please try again later.");
-        })
-        .finally(() => {
-          setLoading(false); // Set loading to false after the request completes
-        });
+      fetchBookById(id).then((fetchedBook) => {
+        // Using type assertion to bypass TypeScript's type checking
+        const bookWithAuthorId = fetchedBook as any;
+        if (bookWithAuthorId?.authorId) {
+          fetchAuthorById(bookWithAuthorId.authorId);
+        }
+      });
     }
-  }, [id]);
+  }, [id, fetchBookById, fetchAuthorById]);
 
-  // Display a loading message while the data is being fetched
-  if (loading) {
+  if (bookLoading || authorLoading) {
     return <p>Loading book details...</p>;
   }
 
-  // Display an error message if the request fails
-  if (error) {
-    return <p style={{ color: "red" }}>{error}</p>;
+  if (bookError || authorError) {
+    return <p style={{ color: "red" }}>{bookError || authorError}</p>;
   }
 
-  // Display the book details
   return (
     <div style={{ padding: "20px" }}>
       <h1>{book?.title}</h1>
