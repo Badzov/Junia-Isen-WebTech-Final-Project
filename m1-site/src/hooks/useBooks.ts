@@ -4,7 +4,8 @@ import { BookModel, CreateBookModel } from "../models/BookModel";
 
 export const useBooks = () => {
   const [books, setBooks] = useState<BookModel[]>([]);
-  const [book, setBook] = useState<BookModel | null>(null); 
+  const [book, setBook] = useState<BookModel | null>(null);
+  const [ratings, setRatings] = useState<any[]>([]); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +55,19 @@ export const useBooks = () => {
     }
   }, []);
 
+  const fetchRatings = useCallback( async (bookId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3001/api/books/${bookId}/ratings`);
+      const data = await response.json();
+      setRatings(data);
+    } catch (err) {
+      setError("Failed to fetch ratings");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Create a new book
   const createBook = async (newBook: CreateBookModel) => {
     setLoading(true);
@@ -84,5 +98,5 @@ export const useBooks = () => {
     }
   };
 
-  return { books, book, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, createBook, deleteBook };
+  return { books, book, ratings, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, fetchRatings, createBook, deleteBook };
 };

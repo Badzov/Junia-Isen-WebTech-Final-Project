@@ -1,33 +1,31 @@
+// app/books/[id]/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useBooks } from "../../../hooks/useBooks";
 import { useAuthors } from "../../../hooks/useAuthors";
 import Link from "next/link";
-import { Drawer } from "@mui/material";
 import { PageTitle } from "../../../components/PageTitle";
-import DeleteBookModal from "../../../components/modals/DeleteBookModal"; // Import DeleteBookModal
+import DeleteBookModal from "../../../components/modals/DeleteBookModal";
+import { RatingInput } from "../../../components/RatingInput";
+import { RatingsDrawer } from "../../../components/RatingsDrawer";
+import { Typography } from "@mui/material";
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
-
   const {
     book,
-    loading: bookLoading,
-    error: bookError,
+    ratings,
+    loading,
+    error,
     fetchBookById,
+    fetchRatings,
     deleteBook,
   } = useBooks();
-
-  const {
-    author,
-    loading: authorLoading,
-    error: authorError,
-    fetchAuthorById,
-  } = useAuthors();
-
+  const { author, fetchAuthorById } = useAuthors();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for delete modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     if (id) {
@@ -36,26 +34,33 @@ export default function BookDetails() {
           fetchAuthorById(fetchedBook.authorId);
         }
       });
+      fetchRatings(id);
     }
-  }, [id, fetchBookById, fetchAuthorById]);
+  }, [id, fetchBookById, fetchAuthorById, fetchRatings]);
 
-  // Handle deleting the book
+  const handleAddRating = async (rating: number, comment?: string) => {
+    await fetch(`/api/books/${id}/ratings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rating, comment }),
+    });
+    fetchRatings(id); // Refresh ratings after adding a new one
+  };
+
   const handleDelete = () => {
     if (id) {
       deleteBook(id).then(() => {
-        setIsDeleteModalOpen(false); // Close the modal after deletion
+        setIsDeleteModalOpen(false);
       });
     }
   };
 
-  if (bookLoading || authorLoading) {
+  if (loading) {
     return <p className="text-center text-gray-600">Loading book details...</p>;
   }
 
-  if (bookError || authorError) {
-    return (
-      <p className="text-center text-red-600">{bookError || authorError}</p>
-    );
+  if (error) {
+    return <p className="text-center text-red-600">{error}</p>;
   }
 
   return (
@@ -87,6 +92,15 @@ export default function BookDetails() {
             {book?.averageRating === 0 ? "NaN" : `${book?.averageRating}/5`}
           </p>
         </div>
+
+        {/* Rating Input */}
+        <div className="space-y-4">
+          <Typography variant="h6" className="text-gray-800">
+            Rate this book
+          </Typography>
+          <RatingInput onSubmit={handleAddRating} />
+        </div>
+
         <div className="flex justify-between items-center">
           <div className="flex space-x-4">
             <button
@@ -101,7 +115,6 @@ export default function BookDetails() {
               </button>
             </Link>
           </div>
-          {/* Delete button on the far right */}
           <button
             onClick={() => setIsDeleteModalOpen(true)}
             className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105"
@@ -111,18 +124,14 @@ export default function BookDetails() {
         </div>
       </div>
 
-      {/* Drawer for Ratings */}
-      <Drawer
-        anchor="right"
-        open={isDrawerOpen}
+      {/* Ratings Drawer */}
+      <RatingsDrawer
+        ratings={ratings}
+        isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      >
-        <div className="w-96 p-6">
-          <h2 className="text-xl font-bold mb-4">Ratings</h2>
-          {/* Add ratings list here */}
-          <p>No ratings available.</p>
-        </div>
-      </Drawer>
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
 
       {/* Delete Book Modal */}
       <DeleteBookModal
