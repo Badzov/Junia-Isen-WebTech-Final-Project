@@ -40,7 +40,7 @@ const CreateAuthorModal: React.FC<CreateAuthorModalProps> = ({
       return;
     }
     setError("");
-    onSave(author); // Pass the author data to the parent component
+    onSave(author);
   };
 
   return (

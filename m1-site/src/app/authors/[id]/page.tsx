@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAuthors } from "../../../hooks/useAuthors";
-import { useBooks } from "../../../hooks/useBooks"; // Import useBooks
+import { useBooks } from "../../../hooks/useBooks";
 import Link from "next/link";
 import { PageTitle } from "../../../components/PageTitle";
 import DeleteAuthorModal from "../../../components/modals/DeleteAuthorModal";
-import { AuthorBooksList } from "../../../components/AuthorBooksList"; // Import AuthorBooksList
+import { AuthorBooksList } from "../../../components/AuthorBooksList";
+import { CreateBookModel } from "../../../models/BookModel";
 
 export default function AuthorDetails() {
   const { id } = useParams<{ id: string }>();
@@ -17,9 +18,10 @@ export default function AuthorDetails() {
     error: authorError,
     fetchAuthorById,
     deleteAuthor,
+    authors,
   } = useAuthors();
 
-  const { books, fetchBooksByAuthorId } = useBooks();
+  const { books, fetchBooksByAuthorId, deleteBook, createBook } = useBooks();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
@@ -30,12 +32,26 @@ export default function AuthorDetails() {
   }, [id, fetchAuthorById, fetchBooksByAuthorId]);
 
   // Handle deleting the author
-  const handleDelete = () => {
+  const handleDeleteAuthor = () => {
     if (id) {
       deleteAuthor(id).then(() => {
-        setIsDeleteModalOpen(false); // Close the modal after deletion
+        setIsDeleteModalOpen(false);
       });
     }
+  };
+
+  // Handle deleting a book
+  const handleDeleteBook = (bookId: string) => {
+    deleteBook(bookId).then(() => {
+      fetchBooksByAuthorId(id);
+    });
+  };
+
+  // Handle creating a new book
+  const handleCreateBook = (book: CreateBookModel) => {
+    createBook(book).then(() => {
+      fetchBooksByAuthorId(id);
+    });
   };
 
   if (authorLoading) {
@@ -78,7 +94,13 @@ export default function AuthorDetails() {
           </div>
         </div>
         {/* List of books written by the author */}
-        <AuthorBooksList books={books} />
+        <AuthorBooksList
+          books={books}
+          onDeleteBook={handleDeleteBook}
+          onCreateBook={handleCreateBook}
+          authors={authors}
+          currentAuthorId={id}
+        />
         <div className="flex justify-between items-center">
           <div className="flex space-x-4">
             <Link href="/authors">
@@ -101,7 +123,7 @@ export default function AuthorDetails() {
       <DeleteAuthorModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={handleDelete}
+        onDelete={handleDeleteAuthor}
       />
     </div>
   );

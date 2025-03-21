@@ -17,12 +17,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         type="text"
         placeholder="Search..."
         value={searchQuery}
-        onChange={(e) => onSearchChange(e.target.value)} // Update searchQuery state
-        onKeyPress={(e) => e.key === "Enter" && onSearch()} // Trigger search on Enter
+        onChange={(e) => onSearchChange(e.target.value)}
+        onKeyPress={(e) => e.key === "Enter" && onSearch()}
         className="px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all w-64"
       />
       <button
-        onClick={onSearch} // Trigger search on button click
+        onClick={onSearch}
         className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-r-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105"
       >
         Search

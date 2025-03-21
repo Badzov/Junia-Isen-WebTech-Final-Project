@@ -1,4 +1,3 @@
-// hooks/useBooks.ts
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { BookModel, CreateBookModel } from "../models/BookModel";
@@ -60,6 +59,7 @@ export const useBooks = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log("Sending payload:", newBook)
       const response = await axios.post<BookModel>("http://localhost:3001/api/books", newBook);
       setBooks((prevBooks) => [...prevBooks, response.data]);
     } catch (error) {

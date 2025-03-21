@@ -40,7 +40,8 @@ export default function BookDetails() {
 
   const handleAddRating = async (stars: number, comment?: string) => {
     await addRating(id, { stars, comment, bookId: id });
-    fetchRatings(id); // Refresh ratings after adding a new one
+    fetchRatings(id);
+    fetchBookById(id);
   };
 
   const handleDelete = () => {

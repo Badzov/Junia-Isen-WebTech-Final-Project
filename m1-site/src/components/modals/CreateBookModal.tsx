@@ -8,6 +8,7 @@ interface CreateBookModalProps {
   onClose: () => void;
   onSave: (book: CreateBookModel) => void;
   authors: AuthorModel[];
+  defaultAuthorId?: string;
 }
 
 const CreateBookModal: React.FC<CreateBookModalProps> = ({
@@ -15,12 +16,13 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
   onClose,
   onSave,
   authors,
+  defaultAuthorId,
 }) => {
   const [book, setBook] = useState<CreateBookModel>({
     title: "",
     publishedYear: 0,
     price: 0,
-    authorId: "",
+    authorId: defaultAuthorId || "",
   });
 
   const [error, setError] = useState("");
@@ -40,8 +42,24 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
       setError("Please fill in all required fields.");
       return;
     }
+    const publishedYear = Number(book.publishedYear);
+    const price = Number(book.price);
+
+    if (isNaN(publishedYear)) {
+      setError("Published Year must be a valid number.");
+      return;
+    }
+    if (isNaN(price)) {
+      setError("Price must be a valid number.");
+      return;
+    }
+    const payload = {
+      ...book,
+      publishedYear,
+      price,
+    };
     setError("");
-    onSave(book);
+    onSave(payload);
   };
 
   return (
@@ -92,24 +110,27 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
               className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Author
-            </label>
-            <select
-              name="authorId"
-              value={book.authorId}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select an author</option>
-              {authors.map((author) => (
-                <option key={author.id} value={author.id}>
-                  {author.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Conditionally render the author dropdown only if defaultAuthorId is not provided */}
+          {!defaultAuthorId && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Author
+              </label>
+              <select
+                name="authorId"
+                value={book.authorId}
+                onChange={handleChange}
+                className="w-full px-4 py-2 mt-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select an author</option>
+                {authors.map((author) => (
+                  <option key={author.id} value={author.id}>
+                    {author.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="mt-6">
             <button
               onClick={onClose}

@@ -24,8 +24,8 @@ export default function ListAuthors() {
   const [isDeleteAuthorModalOpen, setIsDeleteAuthorModalOpen] = useState(false);
   const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("name"); // Default sort by name
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC"); // Default sort order
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
 
   // Sort options for authors
   const sortOptions = [
@@ -39,10 +39,20 @@ export default function ListAuthors() {
     setSortOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"));
   };
 
+  // Fetch authors when sortBy or sortOrder changes
+  useEffect(() => {
+    fetchAuthors(searchQuery, sortBy, sortOrder);
+  }, [sortBy, sortOrder]); // Add sortBy and sortOrder as dependencies
+
+  // Handle search (triggered by Enter or Search button)
+  const handleSearch = () => {
+    fetchAuthors(searchQuery, sortBy, sortOrder);
+  };
+
   // Load authors when the component mounts
   useEffect(() => {
-    fetchAuthors();
-  }, [fetchAuthors]);
+    fetchAuthors(searchQuery, sortBy, sortOrder);
+  }, []);
 
   // Handle creating a new author
   const handleCreateAuthor = (newAuthor: CreateAuthorModel) => {
@@ -74,7 +84,7 @@ export default function ListAuthors() {
           <SearchBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            onSearch={() => fetchAuthors(searchQuery, sortBy, sortOrder)}
+            onSearch={handleSearch}
           />
           <SortDropdown
             sortOptions={sortOptions}

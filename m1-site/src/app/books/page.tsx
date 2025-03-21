@@ -32,8 +32,8 @@ export default function BookList() {
   const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] = useState(false);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("title"); // Default sort by title
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC"); // Default sort order
+  const [sortBy, setSortBy] = useState("title");
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
 
   // Sort options for books
   const sortOptions = [
@@ -48,16 +48,21 @@ export default function BookList() {
     setSortOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"));
   };
 
-  // Handle explicit search (triggered by Enter or Search button)
+  // Fetch books when sortBy or sortOrder changes
+  useEffect(() => {
+    fetchBooks(searchQuery, sortBy, sortOrder);
+  }, [sortBy, sortOrder]);
+
+  // Handle search (triggered by Enter or Search button)
   const handleSearch = () => {
     fetchBooks(searchQuery, sortBy, sortOrder);
   };
 
   // Load books and authors when the component mounts
   useEffect(() => {
-    fetchBooks();
+    fetchBooks(searchQuery, sortBy, sortOrder);
     fetchAuthors();
-  }, [fetchBooks, fetchAuthors]);
+  }, []);
 
   // Handle creating a new book
   const handleCreateBook = (newBook: CreateBookModel) => {

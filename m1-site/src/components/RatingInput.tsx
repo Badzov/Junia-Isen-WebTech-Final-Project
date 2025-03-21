@@ -1,4 +1,3 @@
-// components/RatingInput.tsx
 import React, { useState } from "react";
 import { Rating as RatingIcon, TextField, Button, Box } from "@mui/material";
 
