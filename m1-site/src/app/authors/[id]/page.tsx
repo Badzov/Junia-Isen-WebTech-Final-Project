@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useState } from "react"; // Add useState
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAuthors } from "../../../hooks/useAuthors";
+import { useBooks } from "../../../hooks/useBooks"; // Import useBooks
 import Link from "next/link";
 import { PageTitle } from "../../../components/PageTitle";
-import DeleteAuthorModal from "../../../components/modals/DeleteAuthorModal"; // Import DeleteAuthorModal
+import DeleteAuthorModal from "../../../components/modals/DeleteAuthorModal";
+import { AuthorBooksList } from "../../../components/AuthorBooksList"; // Import AuthorBooksList
 
 export default function AuthorDetails() {
   const { id } = useParams<{ id: string }>();
@@ -14,16 +16,18 @@ export default function AuthorDetails() {
     loading: authorLoading,
     error: authorError,
     fetchAuthorById,
-    deleteAuthor, // Add deleteAuthor from useAuthors hook
+    deleteAuthor,
   } = useAuthors();
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for delete modal
+  const { books, fetchBooksByAuthorId } = useBooks();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchAuthorById(id);
+      fetchBooksByAuthorId(id);
     }
-  }, [id, fetchAuthorById]);
+  }, [id, fetchAuthorById, fetchBooksByAuthorId]);
 
   // Handle deleting the author
   const handleDelete = () => {
@@ -55,11 +59,11 @@ export default function AuthorDetails() {
               {author?.biography || "No biography available."}
             </p>
             <p className="text-gray-700">
-              <strong>Books Written:</strong>{" "}
+              <strong>Number of books written:</strong>{" "}
               {author?.numberOfBooksWritten || "0"}
             </p>
             <p className="text-gray-700">
-              <strong>Rating:</strong>{" "}
+              <strong>Average rating:</strong>{" "}
               {author?.averageRating === 0
                 ? "NaN"
                 : `${author?.averageRating}/5`}
@@ -73,6 +77,8 @@ export default function AuthorDetails() {
             />
           </div>
         </div>
+        {/* List of books written by the author */}
+        <AuthorBooksList books={books} />
         <div className="flex justify-between items-center">
           <div className="flex space-x-4">
             <Link href="/authors">

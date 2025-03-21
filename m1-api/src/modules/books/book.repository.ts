@@ -15,6 +15,7 @@ export class BookRepository {
     sortOrder: 'ASC' | 'DESC' = 'ASC',
     limit?: number,
     offset?: number,
+    authorId?: string,
   ): Promise<BookModel[]> {
     // Here we just make a standard query using the TypeORM QueryBuilder
     const query = this.bookRepository.createQueryBuilder('book');
@@ -26,6 +27,10 @@ export class BookRepository {
     //Sorting by sortBy
     if (sortBy) {
       query.orderBy(`book.${sortBy}`, sortOrder);
+    }
+    // Filter by authorId
+    if (authorId) {
+      query.andWhere('book.authorId = :authorId', { authorId });
     }
     //Pagination
     if (limit !== undefined && offset !== undefined) {

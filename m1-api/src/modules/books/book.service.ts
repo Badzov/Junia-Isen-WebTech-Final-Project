@@ -16,6 +16,7 @@ export class BookService {
     sortOrder: 'ASC' | 'DESC' = 'ASC',
     limit?: number,
     offset?: number,
+    authorId?: string,
   ): Promise<BookModel[]> {
     return this.bookRepository.getBooks(
       search,
@@ -23,6 +24,7 @@ export class BookService {
       sortOrder,
       limit,
       offset,
+      authorId,
     );
   }
 

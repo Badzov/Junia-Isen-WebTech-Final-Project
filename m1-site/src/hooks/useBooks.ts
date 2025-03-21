@@ -40,6 +40,20 @@ export const useBooks = () => {
     }
   }, []);
 
+  // Fetch books by author ID
+  const fetchBooksByAuthorId = useCallback(async (authorId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get<BookModel[]>(`http://localhost:3001/api/books?authorId=${authorId}`);
+      setBooks(response.data);
+    } catch (error) {
+      setError("Failed to fetch books by author.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Create a new book
   const createBook = async (newBook: CreateBookModel) => {
     setLoading(true);
@@ -70,5 +84,5 @@ export const useBooks = () => {
     }
   };
 
-  return { books, book, loading, error, fetchBooks, fetchBookById, createBook, deleteBook };
+  return { books, book, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, createBook, deleteBook };
 };

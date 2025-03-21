@@ -15,8 +15,9 @@ export class BookController {
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
+    @Query('authorId') authorId?: string,
   ): Promise<BookModel[]> {
-    return this.bookService.getBooks(search, sortBy, sortOrder, limit, offset);
+    return this.bookService.getBooks(search, sortBy, sortOrder, limit, offset, authorId);
   }
 
   @Get(':id') // /api/books/:id
