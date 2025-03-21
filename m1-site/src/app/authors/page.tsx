@@ -5,8 +5,10 @@ import { AuthorTable } from "../../components/AuthorTable";
 import { SearchBar } from "../../components/SearchBar";
 import CreateAuthorModal from "../../components/modals/CreateAuthorModal";
 import DeleteAuthorModal from "../../components/modals/DeleteAuthorModal";
-import { CreateAuthorModel } from "../../models/AuthorModel";
 import { PageTitle } from "../../components/PageTitle";
+import { CreateAuthorModel } from "../../models/AuthorModel";
+import { SortDropdown } from "../../components/SortDropdown";
+import { SortOrderButton } from "../../components/SortOrderButton";
 
 export default function ListAuthors() {
   const {
@@ -22,36 +24,38 @@ export default function ListAuthors() {
   const [isDeleteAuthorModalOpen, setIsDeleteAuthorModalOpen] = useState(false);
   const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("name"); // Default sort by name
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC"); // Default sort order
+
+  // Sort options for authors
+  const sortOptions = [
+    { value: "name", label: "Sort by Name" },
+    { value: "numberOfBooksWritten", label: "Sort by Number of Books" },
+    { value: "averageRating", label: "Sort by Rating" },
+  ];
+
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"));
+  };
 
   // Load authors when the component mounts
   useEffect(() => {
     fetchAuthors();
   }, [fetchAuthors]);
 
-  // Save a new author and reload the authors from the backend
+  // Handle creating a new author
   const handleCreateAuthor = (newAuthor: CreateAuthorModel) => {
     createAuthor(newAuthor).then(() => {
-      setIsCreateAuthorModalOpen(false); // Close the modal
+      setIsCreateAuthorModalOpen(false);
     });
   };
 
-  // Delete an author and reload the authors from the backend
+  // Handle deleting an author
   const handleDeleteAuthor = (id: string) => {
     deleteAuthor(id).then(() => {
-      setIsDeleteAuthorModalOpen(false); // Close the delete confirmation modal
+      setIsDeleteAuthorModalOpen(false);
     });
-  };
-
-  // Handle search when the user presses "Enter" or clicks the "Search" button
-  const handleSearch = () => {
-    fetchAuthors(searchQuery);
-  };
-
-  // Handle "Enter" key press in the search input
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
   };
 
   if (authorsLoading) {
@@ -63,31 +67,42 @@ export default function ListAuthors() {
   }
 
   return (
-    <div className="p-6">
-      <PageTitle title="List of Authors" /> {/* Add PageTitle here */}
-      <div className="mb-4">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSearch={handleSearch}
+    <div className="max-w-6xl mx-auto p-6">
+      <PageTitle title="List of Authors" />
+      <div className="mb-6 flex gap-4">
+        <div className="flex gap-4 flex-1">
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSearch={() => fetchAuthors(searchQuery, sortBy, sortOrder)}
+          />
+          <SortDropdown
+            sortOptions={sortOptions}
+            selectedSort={sortBy}
+            onSortChange={setSortBy}
+          />
+          <SortOrderButton
+            sortOrder={sortOrder}
+            onToggleSortOrder={toggleSortOrder}
+          />
+        </div>
+      </div>
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <AuthorTable
+          authors={authors}
+          onDelete={(id) => {
+            setSelectedAuthorId(id);
+            setIsDeleteAuthorModalOpen(true);
+          }}
         />
+      </div>
+      {/* Move the Create Author button below the table */}
+      <div className="mt-6 flex justify-end">
         <button
           onClick={() => setIsCreateAuthorModalOpen(true)}
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105"
         >
-          Create Author
-        </button>
-        <button
-          onClick={() => fetchAuthors(undefined, "name", "ASC")}
-          className="ml-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Sort Ascending
-        </button>
-        <button
-          onClick={() => fetchAuthors(undefined, "name", "DESC")}
-          className="ml-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Sort Descending
+          Add Author
         </button>
       </div>
       {isCreateAuthorModalOpen && (
@@ -97,13 +112,6 @@ export default function ListAuthors() {
           onSave={handleCreateAuthor}
         />
       )}
-      <AuthorTable
-        authors={authors}
-        onDelete={(id) => {
-          setSelectedAuthorId(id);
-          setIsDeleteAuthorModalOpen(true);
-        }}
-      />
       {isDeleteAuthorModalOpen && (
         <DeleteAuthorModal
           isOpen={isDeleteAuthorModalOpen}

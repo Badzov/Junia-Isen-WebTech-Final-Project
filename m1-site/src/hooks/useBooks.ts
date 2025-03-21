@@ -9,11 +9,12 @@ export const useBooks = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch all books
-  const fetchBooks = useCallback(async () => {
+  const fetchBooks = useCallback(async (search?: string, sortBy: string = "title", sortOrder: "ASC" | "DESC" = "ASC") => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get<BookModel[]>("http://localhost:3001/api/books");
+      const params = { search, sortBy, sortOrder };
+      const response = await axios.get<BookModel[]>("http://localhost:3001/api/books", { params });
       setBooks(response.data);
     } catch (error) {
       setError("Failed to fetch books.");
@@ -29,7 +30,8 @@ export const useBooks = () => {
     setError(null);
     try {
       const response = await axios.get<BookModel>(`http://localhost:3001/api/books/${id}`);
-      setBook(response.data); 
+      setBook(response.data);
+      return response.data; 
     } catch (error) {
       setError("Failed to fetch book details.");
       console.error(error);

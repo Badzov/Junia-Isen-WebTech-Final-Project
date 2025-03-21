@@ -30,7 +30,8 @@ export const useAuthors = () => {
     setError(null);
     try {
       const response = await axios.get(`http://localhost:3001/api/authors/${id}`);
-      setAuthor(response.data); // Set the single author state
+      setAuthor(response.data);
+      return response.data;
     } catch (error) {
       setError("Failed to fetch author details.");
       console.error(error);

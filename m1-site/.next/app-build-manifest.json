@@ -21,15 +21,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/authors/page.js"
     ],
+    "/books/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/books/[id]/page.js"
+    ],
     "/authors/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/authors/[id]/page.js"
     ],
-    "/books/[id]/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/books/[id]/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
