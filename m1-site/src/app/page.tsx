@@ -38,8 +38,8 @@ export default function Home() {
       <div className="mt-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Our Team</h2>
         <ul className="space-y-3">
-          <li className="text-gray-700">Eugenio Pedraza</li>
           <li className="text-gray-700">Vukasin Badzov</li>
+          <li className="text-gray-700">Eugenio Pedraza</li>
           <li className="text-gray-700">Anastasiia Shulhina</li>
           <li className="text-gray-700">Daulet Oshan</li>
         </ul>

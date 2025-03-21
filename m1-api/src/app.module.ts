@@ -15,7 +15,7 @@ import { RatingModule } from './modules/ratings/rating.module';
   imports: [DatabaseModule, AuthorModule, BookModule, RatingModule, ThrottlerModule.forRoot([{
     name: 'short',
     ttl: 1000, 
-    limit: 3,  
+    limit: 6,  
     },{
     name: 'long',
     ttl: 60000, 

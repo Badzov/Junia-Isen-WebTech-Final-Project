@@ -1,9 +1,9 @@
-// app/books/[id]/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useBooks } from "../../../hooks/useBooks";
 import { useAuthors } from "../../../hooks/useAuthors";
+import { useRatings } from "../../../hooks/useRatings";
 import Link from "next/link";
 import { PageTitle } from "../../../components/PageTitle";
 import DeleteBookModal from "../../../components/modals/DeleteBookModal";
@@ -13,16 +13,16 @@ import { Typography } from "@mui/material";
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
-  const {
-    book,
-    ratings,
-    loading,
-    error,
-    fetchBookById,
-    fetchRatings,
-    deleteBook,
-  } = useBooks();
+  const { book, loading, error, fetchBookById, deleteBook } = useBooks();
   const { author, fetchAuthorById } = useAuthors();
+  const {
+    ratings,
+    loading: ratingsLoading,
+    error: ratingsError,
+    fetchRatings,
+    addRating,
+    deleteRating,
+  } = useRatings();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -38,12 +38,8 @@ export default function BookDetails() {
     }
   }, [id, fetchBookById, fetchAuthorById, fetchRatings]);
 
-  const handleAddRating = async (rating: number, comment?: string) => {
-    await fetch(`/api/books/${id}/ratings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rating, comment }),
-    });
+  const handleAddRating = async (stars: number, comment?: string) => {
+    await addRating(id, { stars, comment, bookId: id });
     fetchRatings(id); // Refresh ratings after adding a new one
   };
 
@@ -131,6 +127,7 @@ export default function BookDetails() {
         onClose={() => setIsDrawerOpen(false)}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
+        onDeleteRating={deleteRating} // Pass the deleteRating function
       />
 
       {/* Delete Book Modal */}

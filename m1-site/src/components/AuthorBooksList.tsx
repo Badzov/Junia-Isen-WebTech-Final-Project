@@ -25,7 +25,7 @@ export const AuthorBooksList: React.FC<AuthorBooksListProps> = ({ books }) => {
                 <strong>Published Year:</strong> {book.publishedYear}
               </p>
               <p className="text-gray-600">
-                <strong>Rating:</strong>{" "}
+                <strong>Average Rating:</strong>{" "}
                 {book.averageRating === 0 ? "NaN" : `${book.averageRating}/5`}
               </p>
             </div>

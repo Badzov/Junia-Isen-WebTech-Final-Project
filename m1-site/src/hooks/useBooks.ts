@@ -1,3 +1,4 @@
+// hooks/useBooks.ts
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { BookModel, CreateBookModel } from "../models/BookModel";
@@ -5,7 +6,6 @@ import { BookModel, CreateBookModel } from "../models/BookModel";
 export const useBooks = () => {
   const [books, setBooks] = useState<BookModel[]>([]);
   const [book, setBook] = useState<BookModel | null>(null);
-  const [ratings, setRatings] = useState<any[]>([]); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,7 @@ export const useBooks = () => {
     try {
       const response = await axios.get<BookModel>(`http://localhost:3001/api/books/${id}`);
       setBook(response.data);
-      return response.data; 
+      return response.data;
     } catch (error) {
       setError("Failed to fetch book details.");
       console.error(error);
@@ -50,19 +50,6 @@ export const useBooks = () => {
       setBooks(response.data);
     } catch (error) {
       setError("Failed to fetch books by author.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchRatings = useCallback( async (bookId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3001/api/books/${bookId}/ratings`);
-      const data = await response.json();
-      setRatings(data);
-    } catch (err) {
-      setError("Failed to fetch ratings");
     } finally {
       setLoading(false);
     }
@@ -98,5 +85,5 @@ export const useBooks = () => {
     }
   };
 
-  return { books, book, ratings, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, fetchRatings, createBook, deleteBook };
+  return { books, book, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, createBook, deleteBook };
 };

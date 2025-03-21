@@ -63,7 +63,7 @@ export default function AuthorDetails() {
               {author?.numberOfBooksWritten || "0"}
             </p>
             <p className="text-gray-700">
-              <strong>Average rating:</strong>{" "}
+              <strong>Average Rating:</strong>{" "}
               {author?.averageRating === 0
                 ? "NaN"
                 : `${author?.averageRating}/5`}

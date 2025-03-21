@@ -1,4 +1,3 @@
-// components/RatingsDrawer.tsx
 import React from "react";
 import {
   Drawer,
@@ -9,21 +8,18 @@ import {
   Button,
   Box,
   Rating as RatingIcon,
+  IconButton,
 } from "@mui/material";
-
-interface Rating {
-  id: string;
-  rating: number;
-  comment?: string;
-  createdAt: string;
-}
+import { Delete } from "@mui/icons-material";
+import { RatingModel } from "../models/RatingModel";
 
 interface RatingsDrawerProps {
-  ratings: Rating[];
+  ratings: RatingModel[];
   isOpen: boolean;
   onClose: () => void;
   sortOrder: "asc" | "desc";
   onSortOrderChange: (order: "asc" | "desc") => void;
+  onDeleteRating: (bookId: string, ratingId: string) => void; // Add this prop for delete functionality
 }
 
 export const RatingsDrawer: React.FC<RatingsDrawerProps> = ({
@@ -32,6 +28,7 @@ export const RatingsDrawer: React.FC<RatingsDrawerProps> = ({
   onClose,
   sortOrder,
   onSortOrderChange,
+  onDeleteRating, // Destructure the new prop
 }) => {
   const sortedRatings = [...ratings].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime();
@@ -55,9 +52,23 @@ export const RatingsDrawer: React.FC<RatingsDrawerProps> = ({
         </Button>
         <List>
           {sortedRatings.map((rating) => (
-            <ListItem key={rating.id} className="border-b border-gray-200">
+            <ListItem
+              key={rating.id}
+              className="border-b border-gray-200"
+              secondaryAction={
+                // Add the delete button here
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => onDeleteRating(rating.bookId, rating.id)} // Call the delete function
+                  sx={{ color: "rgba(0, 0, 0, 0.26)" }} // Make the button subtle
+                >
+                  <Delete fontSize="small" /> {/* Use a small delete icon */}
+                </IconButton>
+              }
+            >
               <ListItemText
-                primary={<RatingIcon value={rating.rating} readOnly />}
+                primary={<RatingIcon value={rating.stars} readOnly />}
                 secondary={
                   <>
                     <Typography variant="body2" className="text-gray-700">

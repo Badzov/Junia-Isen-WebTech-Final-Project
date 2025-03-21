@@ -3,17 +3,17 @@ import React, { useState } from "react";
 import { Rating as RatingIcon, TextField, Button, Box } from "@mui/material";
 
 interface RatingInputProps {
-  onSubmit: (rating: number, comment?: string) => void;
+  onSubmit: (stars: number, comment?: string) => void;
 }
 
 export const RatingInput: React.FC<RatingInputProps> = ({ onSubmit }) => {
-  const [rating, setRating] = useState<number | null>(null);
+  const [stars, setStars] = useState<number | null>(null);
   const [comment, setComment] = useState<string>("");
 
   const handleSubmit = () => {
-    if (rating !== null) {
-      onSubmit(rating, comment);
-      setRating(null);
+    if (stars !== null) {
+      onSubmit(stars, comment);
+      setStars(null);
       setComment("");
     }
   };
@@ -21,8 +21,8 @@ export const RatingInput: React.FC<RatingInputProps> = ({ onSubmit }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <RatingIcon
-        value={rating}
-        onChange={(_, newValue) => setRating(newValue)}
+        value={stars}
+        onChange={(_, newValue) => setStars(newValue)}
         precision={1}
         max={5}
       />
@@ -37,7 +37,7 @@ export const RatingInput: React.FC<RatingInputProps> = ({ onSubmit }) => {
       <Button
         variant="contained"
         onClick={handleSubmit}
-        disabled={rating === null}
+        disabled={stars === null}
         className="bg-blue-600 hover:bg-blue-700"
       >
         Submit Rating
