@@ -44,7 +44,9 @@ export const AuthorTable: React.FC<AuthorTableProps> = ({
                 {author.numberOfBooksWritten}
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">
-                {author.averageRating || "N/A"}
+                {author?.averageRating === 0
+                  ? "NaN"
+                  : `${author?.averageRating.toFixed(2)}/5`}
               </td>
               <td className="px-6 py-4">
                 <img

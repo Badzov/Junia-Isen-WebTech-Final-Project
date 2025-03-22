@@ -10,11 +10,16 @@ import DeleteBookModal from "../../../components/modals/DeleteBookModal";
 import { RatingInput } from "../../../components/RatingInput";
 import { RatingsDrawer } from "../../../components/RatingsDrawer";
 import { Typography } from "@mui/material";
+import { IconButton } from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import EditBookModal from "../../../components/modals/EditBookModal";
+import { BookModel, UpdateBookModel } from "../../../models/BookModel";
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
-  const { book, loading, error, fetchBookById, deleteBook } = useBooks();
-  const { author, fetchAuthorById } = useAuthors();
+  const { book, loading, error, fetchBookById, deleteBook, updateBook } =
+    useBooks();
+  const { author, fetchAuthorById, authors, fetchAuthors } = useAuthors();
   const {
     ratings,
     loading: ratingsLoading,
@@ -25,6 +30,7 @@ export default function BookDetails() {
   } = useRatings();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
@@ -35,6 +41,7 @@ export default function BookDetails() {
         }
       });
       fetchRatings(id);
+      fetchAuthors();
     }
   }, [id, fetchBookById, fetchAuthorById, fetchRatings]);
 
@@ -52,6 +59,18 @@ export default function BookDetails() {
     }
   };
 
+  const handleUpdateBook = async (updatedBook: UpdateBookModel) => {
+    if (id) {
+      await updateBook(id, updatedBook);
+      fetchBookById(id).then((fetchedBook) => {
+        if (fetchedBook?.authorId) {
+          fetchAuthorById(fetchedBook.authorId);
+        }
+      });
+      setIsEditModalOpen(false);
+    }
+  };
+
   if (loading) {
     return <p className="text-center text-gray-600">Loading book details...</p>;
   }
@@ -62,7 +81,19 @@ export default function BookDetails() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <PageTitle title={book?.title || "Book Details"} />
+      <div className="flex items-center space-x-2">
+        <PageTitle title={book?.title || "Book Details"} />
+        <IconButton
+          aria-label="edit"
+          onClick={() => setIsEditModalOpen(true)}
+          sx={{
+            color: "rgba(0, 0, 0, 0.54)",
+            marginTop: "-12px",
+          }}
+        >
+          <Edit fontSize="small" />
+        </IconButton>
+      </div>
       <div className="bg-white rounded-xl shadow-lg p-8 space-y-8">
         <div className="space-y-6">
           <p className="text-gray-700">
@@ -86,7 +117,9 @@ export default function BookDetails() {
           </p>
           <p className="text-gray-700">
             <strong>Rating:</strong>{" "}
-            {book?.averageRating === 0 ? "NaN" : `${book?.averageRating}/5`}
+            {book?.averageRating === 0
+              ? "NaN"
+              : `${book?.averageRating.toFixed(2)}/5`}
           </p>
         </div>
 
@@ -100,17 +133,17 @@ export default function BookDetails() {
 
         <div className="flex justify-between items-center">
           <div className="flex space-x-4">
+            <Link href="/books">
+              <button className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all transform hover:scale-105">
+                Go back
+              </button>
+            </Link>
             <button
               onClick={() => setIsDrawerOpen(true)}
               className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105"
             >
               View Ratings
             </button>
-            <Link href="/books">
-              <button className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all transform hover:scale-105">
-                Go back
-              </button>
-            </Link>
           </div>
           <button
             onClick={() => setIsDeleteModalOpen(true)}
@@ -128,7 +161,7 @@ export default function BookDetails() {
         onClose={() => setIsDrawerOpen(false)}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
-        onDeleteRating={deleteRating} // Pass the deleteRating function
+        onDeleteRating={deleteRating}
       />
 
       {/* Delete Book Modal */}
@@ -136,6 +169,15 @@ export default function BookDetails() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDelete}
+      />
+
+      {/* Edit Book Modal */}
+      <EditBookModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdateBook}
+        book={book}
+        authors={authors}
       />
     </div>
   );

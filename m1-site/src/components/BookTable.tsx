@@ -51,7 +51,9 @@ export const BookTable: React.FC<BookTableProps> = ({
                 {book.publishedYear}
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">
-                {book.averageRating || "N/A"}
+                {book?.averageRating === 0
+                  ? "NaN"
+                  : `${book?.averageRating.toFixed(2)}/5`}
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">
                 <Link href={`/books/${book.id}`}>

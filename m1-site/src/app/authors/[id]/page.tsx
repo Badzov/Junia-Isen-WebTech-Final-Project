@@ -8,6 +8,10 @@ import { PageTitle } from "../../../components/PageTitle";
 import DeleteAuthorModal from "../../../components/modals/DeleteAuthorModal";
 import { AuthorBooksList } from "../../../components/AuthorBooksList";
 import { CreateBookModel } from "../../../models/BookModel";
+import { IconButton } from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import EditAuthorModal from "../../../components/modals/EditAuthorModal";
+import { UpdateAuthorModel } from "../../../models/AuthorModel";
 
 export default function AuthorDetails() {
   const { id } = useParams<{ id: string }>();
@@ -18,11 +22,13 @@ export default function AuthorDetails() {
     error: authorError,
     fetchAuthorById,
     deleteAuthor,
+    updateAuthor,
     authors,
   } = useAuthors();
 
   const { books, fetchBooksByAuthorId, deleteBook, createBook } = useBooks();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -36,6 +42,15 @@ export default function AuthorDetails() {
     if (id) {
       deleteAuthor(id).then(() => {
         setIsDeleteModalOpen(false);
+      });
+    }
+  };
+
+  // Handle updating the author
+  const handleUpdateAuthor = (updatedAuthor: UpdateAuthorModel) => {
+    if (id) {
+      updateAuthor(id, updatedAuthor).then(() => {
+        setIsEditModalOpen(false);
       });
     }
   };
@@ -66,7 +81,19 @@ export default function AuthorDetails() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <PageTitle title={author?.name || "Author Details"} />
+      <div className="flex items-center space-x-2">
+        <PageTitle title={author?.name || "Author Details"} />
+        <IconButton
+          aria-label="edit"
+          onClick={() => setIsEditModalOpen(true)}
+          sx={{
+            color: "rgba(0, 0, 0, 0.54)",
+            marginTop: "-12px",
+          }}
+        >
+          <Edit fontSize="small" />
+        </IconButton>
+      </div>
       <div className="bg-white rounded-xl shadow-lg p-8 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
@@ -82,7 +109,7 @@ export default function AuthorDetails() {
               <strong>Average Rating:</strong>{" "}
               {author?.averageRating === 0
                 ? "NaN"
-                : `${author?.averageRating}/5`}
+                : `${author?.averageRating.toFixed(2)}/5`}
             </p>
           </div>
           <div className="flex justify-center">
@@ -124,6 +151,14 @@ export default function AuthorDetails() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDeleteAuthor}
+      />
+
+      {/* Edit Author Modal */}
+      <EditAuthorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdateAuthor}
+        author={author}
       />
     </div>
   );

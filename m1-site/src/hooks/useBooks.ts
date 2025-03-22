@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
-import { BookModel, CreateBookModel } from "../models/BookModel";
+import { BookModel, CreateBookModel, UpdateBookModel } from "../models/BookModel";
 
 export const useBooks = () => {
   const [books, setBooks] = useState<BookModel[]>([]);
@@ -59,11 +59,28 @@ export const useBooks = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Sending payload:", newBook)
       const response = await axios.post<BookModel>("http://localhost:3001/api/books", newBook);
       setBooks((prevBooks) => [...prevBooks, response.data]);
     } catch (error) {
       setError("Failed to create book.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update a book
+  const updateBook = async (id: string, updatedBook: UpdateBookModel) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.patch<BookModel>(`http://localhost:3001/api/books/${id}`, updatedBook);
+      setBook(response.data);
+      setBooks((prevBooks) =>
+        prevBooks.map((book) => (book.id === id ? response.data : book))
+      );
+    } catch (error) {
+      setError("Failed to update book.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -85,5 +102,5 @@ export const useBooks = () => {
     }
   };
 
-  return { books, book, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, createBook, deleteBook };
+  return { books, book, loading, error, fetchBooks, fetchBookById, fetchBooksByAuthorId, createBook, updateBook, deleteBook };
 };

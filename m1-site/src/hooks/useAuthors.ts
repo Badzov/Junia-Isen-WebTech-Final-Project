@@ -1,6 +1,7 @@
+// useAuthors.ts
 import { useCallback, useState } from "react";
 import axios from "axios";
-import { AuthorModel, CreateAuthorModel } from "../models/AuthorModel";
+import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from "../models/AuthorModel";
 
 export const useAuthors = () => {
   const [authors, setAuthors] = useState<AuthorModel[]>([]);
@@ -55,6 +56,24 @@ export const useAuthors = () => {
     }
   };
 
+  // Update an author
+  const updateAuthor = async (id: string, updatedAuthor: UpdateAuthorModel) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.patch(`http://localhost:3001/api/authors/${id}`, updatedAuthor);
+      setAuthor(response.data);
+      setAuthors((prevAuthors) =>
+        prevAuthors.map((author) => (author.id === id ? response.data : author))
+      );
+    } catch (error) {
+      setError("Failed to update author.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Delete an author
   const deleteAuthor = async (id: string) => {
     setLoading(true);
@@ -73,12 +92,13 @@ export const useAuthors = () => {
   // Return all necessary values and functions
   return {
     authors,
-    author, 
+    author,
     loading,
     error,
     fetchAuthors,
-    fetchAuthorById, 
+    fetchAuthorById,
     createAuthor,
+    updateAuthor,
     deleteAuthor,
   };
 };
