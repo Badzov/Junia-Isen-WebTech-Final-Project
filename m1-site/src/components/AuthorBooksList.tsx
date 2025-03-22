@@ -79,7 +79,9 @@ export const AuthorBooksList: React.FC<AuthorBooksListProps> = ({
                 </p>
                 <p className="text-gray-600">
                   <strong>Average Rating:</strong>{" "}
-                  {book.averageRating === 0 ? "NaN" : `${book.averageRating}/5`}
+                  {book?.averageRating === 0
+                    ? "NaN"
+                    : `${book?.averageRating.toFixed(2)}/5`}
                 </p>
               </div>
             </Link>
