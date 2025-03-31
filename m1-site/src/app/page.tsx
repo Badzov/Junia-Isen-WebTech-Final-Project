@@ -40,8 +40,6 @@ export default function Home() {
         <ul className="space-y-3">
           <li className="text-gray-700">Vukasin Badzov</li>
           <li className="text-gray-700">Eugenio Pedraza</li>
-          <li className="text-gray-700">Anastasiia Shulhina</li>
-          <li className="text-gray-700">Daulet Oshan</li>
         </ul>
       </div>
     </div>
